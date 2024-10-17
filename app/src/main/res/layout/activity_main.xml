@@ -3,30 +3,77 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/main"
+        android:id="@+id/mainRelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
     <EditText
-            android:id="@+id/text_input"
+            android:id="@+id/inputAlbumName"
+            android:layout_width="270dp"
             android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Альбом"
+            android:singleLine="true"
+    />
+    <EditText
+            android:id="@+id/inputDate"
             android:layout_width="wrap_content"
-            android:hint="Введите сообщение"
-            android:inputType="text"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:ems="10"
+            android:singleLine="true"
+            android:hint="Дата"
+            android:layout_toEndOf="@+id/inputAlbumName"
     />
     <Button
-            android:text="Кнопка"
+            android:id="@+id/addButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button"
-            android:layout_below="@id/text_input"
-            android:layout_centerInParent="true"/>
-    <TextView
-            android:id="@+id/text_display"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/button"
-            android:layout_centerInParent="true"/>
+            android:layout_below = "@+id/inputAlbumName"
+            android:layout_centerHorizontal="true"
+            android:text="Добавить"
+    />
+    <ScrollView
+            android:id="@+id/galleryScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/addButton">
+
+        <RelativeLayout
+                android:id="@+id/galleryRelativeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    app:srcCompat="@drawable/photo_example"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    android:layout_marginTop="8dp"
+            />
+            <TextView
+                    android:id="@+id/photoAlbumName"
+                    android:text="Достопримечательности"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/imageView"
+                    android:layout_alignStart="@+id/imageView"
+                    android:layout_marginStart="24dp"
+            />
+            <TextView
+                    android:id="@+id/photoDate"
+                    android:text="01.01.1900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/imageView"
+                    android:layout_alignEnd="@+id/imageView"
+                    android:layout_marginEnd="24dp"
+            />
+        </RelativeLayout>
+    </ScrollView>
+
 
 </RelativeLayout>
