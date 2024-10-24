@@ -1,6 +1,12 @@
 package com.example.gallery
 
 class PhotoItem() {
+    companion object{
+        private var nextId: Int = 0
+            get() = field++
+    }
+
+    var id: Int = nextId
     lateinit var album: String
     lateinit var date: String
 

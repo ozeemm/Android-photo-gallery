@@ -7,11 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    //private lateinit var binding: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // binding = ActivityMainBinding .inflate(getLayoutInflater());
+
         setContentView(R.layout.activity_main)
 
         val addButton = findViewById<Button>(R.id.addButton)
@@ -31,18 +29,8 @@ class MainActivity : AppCompatActivity() {
 
             println("Photos (${photoList.count()}):")
             for(item in photoList){
-                println(item.album + " " + item.date)
+                println(item.id.toString() + " " + item.album + " " + item.date)
             }
         }
-        /*
-        val display: TextView = findViewById(R.id.text_display)
-        val button: Button = findViewById(R.id.button)
-        val input: EditText = findViewById(R.id.text_input)
-
-        button.setOnClickListener(){
-            display.text = input.text
-            input.setText("")
-        }
-         */
     }
 }
