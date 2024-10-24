@@ -12,28 +12,18 @@
             android:id="@+id/inputAlbumName"
             android:layout_width="270dp"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:hint="Альбом"
             android:singleLine="true"
-    />
-    <EditText
-            android:id="@+id/inputDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="date"
-            android:ems="10"
-            android:singleLine="true"
-            android:hint="Дата"
-            android:layout_toEndOf="@+id/inputAlbumName"
+            android:layout_marginHorizontal="8dp"
     />
     <Button
             android:id="@+id/addButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below = "@+id/inputAlbumName"
+            android:layout_toEndOf="@+id/inputAlbumName"
             android:layout_centerHorizontal="true"
             android:text="Добавить"
-    />
+            />
     <ScrollView
             android:id="@+id/galleryScrollView"
             android:layout_width="match_parent"

@@ -6,10 +6,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlin.random.Random
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,20 +20,17 @@ class MainActivity : AppCompatActivity() {
 
         val addButton = findViewById<Button>(R.id.addButton)
         val inputAlbumName = findViewById<EditText>(R.id.inputAlbumName)
-        val inputDate = findViewById<EditText>(R.id.inputDate)
         val galleryLinearLayout = findViewById<LinearLayout>(R.id.galleryLinearLayout)
 
         val photoList = ArrayList<Photo>()
 
         addButton.setOnClickListener{
             val album = inputAlbumName.text.toString()
-            val date = inputDate.text.toString()
 
-            val photo = Photo(album, date)
+            val photo = Photo(album)
             photoList.add(photo)
 
             inputAlbumName.text.clear()
-            inputDate.text.clear()
 
             val photoItem = getNewPhotoItem(photo, galleryLinearLayout)
             galleryLinearLayout.addView(photoItem)
