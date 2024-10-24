@@ -1,6 +1,6 @@
 package com.example.gallery
 
-class PhotoItem() {
+class Photo() {
     companion object{
         private var nextId: Int = 0
             get() = field++
