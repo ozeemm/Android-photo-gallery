@@ -21,11 +21,10 @@ class MainActivity : AppCompatActivity() {
 
         val galleryLinearLayout = findViewById<LinearLayout>(R.id.galleryLinearLayout)
 
-        val imagesUri = StorageUtil.getImagesUri()
-        println("Found ${imagesUri.size} images")
+        val photos = StorageUtil.getPhotos()
 
-        for(imageUri in imagesUri){
-            galleryLinearLayout.addView(getPhotoItemView(imageUri, galleryLinearLayout))
+        for(photo in photos){
+            galleryLinearLayout.addView(getPhotoItemView(photo, galleryLinearLayout))
         }
     }
 
@@ -44,16 +43,20 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun getPhotoItemView(uriStr: String, container: ViewGroup): View {
+    private fun getPhotoItemView(photo: Photo, container: ViewGroup): View {
         val photoItem = layoutInflater.inflate(R.layout.photo_item, container, false)
 
         val photoImage = photoItem.findViewById<ImageView>(R.id.photoImage)
         val photoAlbumName = photoItem.findViewById<TextView>(R.id.photoAlbumName)
         val photoDate = photoItem.findViewById<TextView>(R.id.photoDate)
 
-        photoImage.setImageURI(Uri.parse(uriStr))
-        photoAlbumName.text = "Я альбом"
-        photoDate.text = "Я дата"
+        val album = if (photo.album != null) photo.album else "Без альбома"
+        val name = if(photo.name != null) photo.name else "Без названия"
+        val date = if(photo.date != null) photo.date else "Без даты"
+
+        photoImage.setImageURI(Uri.parse(photo.uri))
+        photoAlbumName.text = "$album/$name"
+        photoDate.text = date
 
         return photoItem
     }

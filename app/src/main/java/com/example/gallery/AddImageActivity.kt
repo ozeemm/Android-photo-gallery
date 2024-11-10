@@ -3,25 +3,27 @@ package com.example.gallery
 import android.content.Intent
 import android.graphics.ImageDecoder
 import android.icu.text.SimpleDateFormat
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.MimeTypeMap
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class AddImageActivity : AppCompatActivity()  {
 
     lateinit var imageToSaveView: ImageView
     lateinit var buttonSave: Button
+    lateinit var inputName: EditText
+    lateinit var inputAlbumName: EditText
+    lateinit var inputDate: EditText
 
     var imageUri: Uri? = null
 
@@ -31,6 +33,9 @@ class AddImageActivity : AppCompatActivity()  {
 
         imageToSaveView = findViewById<ImageView>(R.id.imageToSaveView)
         buttonSave = findViewById<Button>(R.id.buttonSave)
+        inputName = findViewById<EditText>(R.id.inputName)
+        inputAlbumName = findViewById<EditText>(R.id.inputAlbumName)
+        inputDate = findViewById<EditText>(R.id.inputDate)
 
         imageToSaveView.setOnClickListener {
             val intent = Intent()
@@ -41,23 +46,37 @@ class AddImageActivity : AppCompatActivity()  {
         }
 
         buttonSave.setOnClickListener {
+            if(imageUri == null)
+                return@setOnClickListener
+
+            val photo = getPhotoFromInputs()
+            if(photo != null) {
+                println(photo.uri)
+                println(photo.name)
+                println(photo.date)
+                println(photo.album)
+            }
+            else{
+                Toast.makeText(this, "Неверный формат даты", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val source = ImageDecoder.createSource(contentResolver, imageUri!!)
             val bitmap = ImageDecoder.decodeBitmap(source)
 
-            val timeStamp = SimpleDateFormat("yyyMMdd_HHmmss", Locale.ENGLISH).format(Date())
             val imageExtension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(imageUri!!))
-            val fileName = "image_${timeStamp}.${imageExtension}"
+            val fileName = "${getDefaultPhotoName()}.${imageExtension}"
 
             val path = StorageUtil.saveImage(fileName, bitmap)
 
             if(path == null)
-                Toast.makeText(this, "ERROR: Image not saved", Toast.LENGTH_SHORT).show()
-            else
-                Toast.makeText(this, "Image Saved", Toast.LENGTH_SHORT).show()
-            println("Saved image to: ${path}")
+                Toast.makeText(this, "Ошибка: Фотография не может быть сохранена", Toast.LENGTH_SHORT).show()
+            else {
+                Toast.makeText(this, "Фотография сохранена", Toast.LENGTH_SHORT).show()
+                println("Saved image to: ${path}")
+            }
         }
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -66,28 +85,49 @@ class AddImageActivity : AppCompatActivity()  {
             return
 
         imageUri = data?.data
-        println("Loaded: ${imageUri.toString()}")
+
+        println("Loaded: ${imageUri!!}")
         println("Type: ${contentResolver.getType(imageUri!!)}")
 
-        var exifDate: LocalDateTime? = null
-        contentResolver.openInputStream(imageUri!!)?.use { stream ->
-            val exif = ExifInterface(stream)
-            // orig: 2024:08:24 11:35:16
-            exif.setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL, "01:01:2013 12:34:56")
-            //exif.saveAttributes()
+        imageToSaveView.setImageURI(imageUri!!)
+        showPhotoInfo()
+    }
 
-            val exifDateFormatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss")
-            var exifDateString = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL)
+    private fun showPhotoInfo(){
+        inputName.setText(getDefaultPhotoName())
+        inputAlbumName.setText("Без альбома")
+        inputDate.setText(getCurrentDateString())
+    }
 
-            println("1) $exifDateString")
-            if (exifDateString == null) {
-                exifDateString = exif.getAttribute(ExifInterface.TAG_DATETIME)
-                println("2) $exifDateString")
-            }
-        }
+    private fun getPhotoFromInputs(): Photo?{
+        if(!isDateStringCorrect(inputDate.text.toString()))
+            return null
 
-        if(imageUri != null){
-            imageToSaveView.setImageURI(imageUri)
+        val photo = Photo()
+        photo.uri = imageUri.toString()
+        photo.name = inputName.text.toString()
+        photo.album = inputAlbumName.text.toString()
+        photo.date = inputDate.text.toString()
+
+        return photo
+    }
+
+    private fun getDefaultPhotoName(): String{
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(Date())
+        return "Image_${timestamp}"
+    }
+
+    private fun getCurrentDateString(): String{
+        return SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.ENGLISH).format(Date())
+    }
+
+    private fun isDateStringCorrect(dateStr: String): Boolean{
+        val pattern = SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.ENGLISH)
+        try {
+            val dateTime = pattern.parse(dateStr)
+            return true
+        } catch(e: Exception){
+            return false
         }
     }
 
