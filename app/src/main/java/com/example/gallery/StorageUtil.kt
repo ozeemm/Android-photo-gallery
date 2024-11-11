@@ -1,11 +1,9 @@
 package com.example.gallery
 
 import android.graphics.Bitmap
-import android.icu.text.SimpleDateFormat
 import android.os.Environment
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
 import kotlin.collections.ArrayList
 
 object StorageUtil {

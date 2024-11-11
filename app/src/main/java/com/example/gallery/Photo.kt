@@ -1,6 +1,8 @@
 package com.example.gallery
 
-class Photo() {
+import java.io.Serializable
+
+class Photo() : Serializable {
     var uri: String? = null
     var name: String? = null
     var date: String? = null

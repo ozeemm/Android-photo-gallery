@@ -15,11 +15,13 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var galleryLinearLayout: LinearLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val galleryLinearLayout = findViewById<LinearLayout>(R.id.galleryLinearLayout)
+        galleryLinearLayout = findViewById(R.id.galleryLinearLayout)
 
         val photos = StorageUtil.getPhotos()
 
@@ -29,18 +31,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Enable Menu
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.main_menu, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Open activity from menu
         if(item.itemId == R.id.menuItemAdd){
             val intent = Intent(this, AddImageActivity::class.java)
-            startActivity(intent)
+            startActivityForResult(intent, 1)
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(resultCode != RESULT_OK)
+            return
+
+        val photo = data!!.getSerializableExtra("Photo") as Photo
+        val photoView = getPhotoItemView(photo, galleryLinearLayout)
+        galleryLinearLayout.addView(photoView)
     }
 
     private fun getPhotoItemView(photo: Photo, container: ViewGroup): View {
