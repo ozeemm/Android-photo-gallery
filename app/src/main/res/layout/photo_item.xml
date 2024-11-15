@@ -6,13 +6,14 @@
         android:layout_height="match_parent">
     <ImageView
             android:id="@+id/photoImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="350dp"
+            android:layout_height="196dp"
+            android:scaleType="fitCenter"
             android:adjustViewBounds="true"
-            app:srcCompat="@drawable/photo_example"
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp"
+            app:srcCompat="@drawable/empty_image"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="8dp"
+            android:contentDescription="Photo"
     />
     <TextView
             android:id="@+id/photoAlbumName"
@@ -28,8 +29,7 @@
             android:text="01.01.1900"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/photoImage"
-            android:layout_alignEnd="@+id/photoImage"
-            android:layout_marginEnd="24dp"
+            android:layout_below="@+id/photoAlbumName"
+            android:layout_alignStart="@+id/photoAlbumName"
     />
 </RelativeLayout>

@@ -1,22 +1,17 @@
 package com.example.gallery
 
-import java.text.SimpleDateFormat
-import java.util.*
+import java.io.Serializable
 
-class Photo() {
-    companion object{
-        private var nextId: Int = 0
-            get() = field++
-    }
+class Photo() : Serializable {
+    var uri: String? = null
+    var name: String? = null
+    var date: String? = null
+    var album: String? = null
 
-    var id: Int = nextId
-    lateinit var album: String
-    lateinit var date: String
-
-    constructor(_album: String): this(){
-        album = if(_album == "") "Без альбома" else _album
-
-        val sdf = SimpleDateFormat("dd.mm.yyyy hh:mm", Locale.getDefault())
-        date = sdf.format(Date())
+    constructor(uri: String, name: String, date: String?, album: String?) : this() {
+        this.uri = uri
+        this.name = name
+        this.date = date
+        this.album = album
     }
 }
