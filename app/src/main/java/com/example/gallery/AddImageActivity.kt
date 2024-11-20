@@ -71,13 +71,14 @@ class AddImageActivity : AppCompatActivity()  {
             else {
                 Toast.makeText(this, "Фотография сохранена", Toast.LENGTH_SHORT).show()
                 println("Saved image to: $path")
-            }
 
-            // Close activity with params
-            val data = Intent()
-            data.putExtra("Photo", photo)
-            setResult(Activity.RESULT_OK, data)
-            finish()
+                photo.uri = path
+                // Close activity with params
+                val data = Intent()
+                data.putExtra("Photo", photo)
+                setResult(Activity.RESULT_OK, data)
+                finish()
+            }
         }
     }
 
