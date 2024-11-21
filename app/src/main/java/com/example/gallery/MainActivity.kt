@@ -15,16 +15,27 @@ class MainActivity : AppCompatActivity() {
     private lateinit var photos: ArrayList<Photo>
     private lateinit var photoAdapter: PhotoAdapter
 
+    private val CREATE_PHOTO = 1
+    private val UPDATE_PHOTO = 2
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         photos = StorageUtil.getPhotos()
 
+        // Fill recycle view
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        photoAdapter = PhotoAdapter(this, photos)
+        photoAdapter = PhotoAdapter(this, photos, { photo: Photo, index: Int ->
+            val intent = Intent(this, AddImageActivity::class.java)
+            intent.putExtra("type", "update")
+            intent.putExtra("photo", photo)
+            intent.putExtra("index", index)
+            startActivityForResult(intent, UPDATE_PHOTO)
+        })
         recyclerView.adapter = photoAdapter
 
+        // Delete photos on swipe down
         val itemTouchHelper = ItemTouchHelper(
             object: ItemTouchHelper.Callback(){
                 override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
@@ -45,7 +56,6 @@ class MainActivity : AppCompatActivity() {
 
                     showText("Фотография удалена")
                 }
-
             }
         )
 
@@ -67,7 +77,8 @@ class MainActivity : AppCompatActivity() {
         // Open activity from menu
         if(item.itemId == R.id.menuItemAdd){
             val intent = Intent(this, AddImageActivity::class.java)
-            startActivityForResult(intent, 1)
+            intent.putExtra("type", "create")
+            startActivityForResult(intent, CREATE_PHOTO)
         }
 
         return super.onOptionsItemSelected(item)
@@ -79,8 +90,19 @@ class MainActivity : AppCompatActivity() {
         if(resultCode != RESULT_OK)
             return
 
-        val photo = data!!.getSerializableExtra("Photo") as Photo
-        photos.add(photo)
-        photoAdapter.notifyDataSetChanged()
+        when(requestCode){
+            CREATE_PHOTO -> {
+                val photo = data!!.getSerializableExtra("photo") as Photo
+                photos.add(photo)
+                photoAdapter.notifyDataSetChanged()
+            }
+            UPDATE_PHOTO -> {
+                val photo = data!!.getSerializableExtra("photo") as Photo
+                val index = data!!.getIntExtra("index", -1)
+
+                photos[index].copyFrom(photo)
+                photoAdapter.notifyDataSetChanged()
+            }
+        }
     }
 }

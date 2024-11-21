@@ -14,4 +14,11 @@ class Photo() : Serializable {
         this.date = date
         this.album = album
     }
+
+    public fun copyFrom(photo: Photo){
+        this.uri = photo.uri
+        this.name = photo.name
+        this.date = photo.date
+        this.album = photo.album
+    }
 }

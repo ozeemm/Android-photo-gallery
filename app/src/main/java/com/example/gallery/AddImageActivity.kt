@@ -27,6 +27,9 @@ class AddImageActivity : AppCompatActivity()  {
 
     private var imageUri: Uri? = null
 
+    private lateinit var type: String
+    private var photoToEdit: Photo? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_image)
@@ -37,7 +40,16 @@ class AddImageActivity : AppCompatActivity()  {
         inputAlbumName = findViewById(R.id.inputAlbumName)
         inputDate = findViewById(R.id.inputDate)
 
+        type = intent.getStringExtra("type")!!
+        if(type == "update") {
+            photoToEdit = intent.getSerializableExtra("photo") as Photo
+            showPhotoInfo(photoToEdit!!)
+        }
+
         imageToSaveView.setOnClickListener {
+            if(type != "create")
+                return@setOnClickListener
+
             // Load image on activity
             val intent = Intent()
             intent.setType("image/*")
@@ -47,39 +59,70 @@ class AddImageActivity : AppCompatActivity()  {
         }
 
         buttonSave.setOnClickListener {
-            if(imageUri == null)
-                return@setOnClickListener
-
-            // Check date format from input
-            val photo = getPhotoFromInputs()
-            if(photo == null) {
-                Toast.makeText(this, "Неверный формат даты", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // Save image in storage
-            val source = ImageDecoder.createSource(contentResolver, imageUri!!)
-            val bitmap = ImageDecoder.decodeBitmap(source)
-
-            val imageExtension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(imageUri!!))
-            val fileName = "${getDefaultPhotoName()}.${imageExtension}"
-
-            val path = StorageUtil.saveImage(fileName, bitmap)
-
-            if(path == null)
-                Toast.makeText(this, "Ошибка: Фотография не может быть сохранена", Toast.LENGTH_SHORT).show()
-            else {
-                Toast.makeText(this, "Фотография сохранена", Toast.LENGTH_SHORT).show()
-                println("Saved image to: $path")
-
-                photo.uri = path
-                // Close activity with params
-                val data = Intent()
-                data.putExtra("Photo", photo)
-                setResult(Activity.RESULT_OK, data)
-                finish()
+            when(type){
+                "create" -> saveImage()
+                "update" -> editImage(photoToEdit!!)
             }
         }
+    }
+
+    private fun saveImage(){
+        if(imageUri == null)
+            return
+
+        // Check date format from input
+        if(!isDateStringCorrect(inputDate.text.toString())) {
+            Toast.makeText(this, "Неверный формат даты", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val photo = Photo(
+            imageUri.toString(),
+            inputName.text.toString(),
+            inputDate.text.toString(),
+            inputAlbumName.text.toString()
+        )
+
+        val source = ImageDecoder.createSource(contentResolver, imageUri!!)
+        val bitmap = ImageDecoder.decodeBitmap(source)
+
+        val imageExtension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(imageUri!!))
+        val fileName = "${getDefaultPhotoName()}.${imageExtension}"
+
+        val path = StorageUtil.saveImage(fileName, bitmap)
+
+        if(path == null)
+            Toast.makeText(this, "Ошибка: Фотография не может быть сохранена", Toast.LENGTH_SHORT).show()
+        else {
+            Toast.makeText(this, "Фотография сохранена", Toast.LENGTH_SHORT).show()
+            println("Saved image to: $path")
+
+            photo.uri = path
+            finishActivity(photo)
+        }
+    }
+
+    private fun editImage(photo: Photo){
+        if(!isDateStringCorrect(inputDate.text.toString())) {
+            Toast.makeText(this, "Неверный формат даты", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        photo.name = inputName.text.toString()
+        photo.date = inputDate.text.toString()
+        photo.album = inputAlbumName.text.toString()
+
+        Toast.makeText(this, "Фотография изменена", Toast.LENGTH_SHORT).show()
+        finishActivity(photo)
+    }
+
+    private fun finishActivity(photo: Photo){
+        val data = Intent()
+        data.putExtra("photo", photo)
+        if(type == "update")
+            data.putExtra("index", intent.getIntExtra("index", -1))
+        setResult(Activity.RESULT_OK, data)
+        finish()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -121,18 +164,11 @@ class AddImageActivity : AppCompatActivity()  {
         inputDate.setText(getCurrentDateString())
     }
 
-    private fun getPhotoFromInputs(): Photo?{
-        if(!isDateStringCorrect(inputDate.text.toString()))
-            return null
-
-        val photo = Photo(
-            imageUri.toString(),
-            inputName.text.toString(),
-            inputDate.text.toString(),
-            inputAlbumName.text.toString()
-        )
-
-        return photo
+    private fun showPhotoInfo(photo: Photo){
+        imageToSaveView.setImageURI(Uri.parse(photo.uri))
+        inputName.setText(photo.name)
+        inputAlbumName.setText(photo.album)
+        inputDate.setText(photo.date)
     }
 
     private fun getDefaultPhotoName(): String{
