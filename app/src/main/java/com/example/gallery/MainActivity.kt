@@ -2,18 +2,19 @@ package com.example.gallery
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var photos: ArrayList<Photo>
     private lateinit var photoAdapter: PhotoAdapter
+
+    private lateinit var gestureDetector: GestureDetector
 
     private val CREATE_PHOTO = 1
     private val UPDATE_PHOTO = 2
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        gestureDetector = GestureDetector(this, SwipeListener())
 
         photos = StorageUtil.getPhotos()
 
@@ -37,11 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         // Delete photos on swipe down
         val itemTouchHelper = ItemTouchHelper(
-            object: ItemTouchHelper.Callback(){
-                override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
-                    return makeMovementFlags(0, ItemTouchHelper.DOWN)
-                }
-
+            object: ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.DOWN){
                 override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                     return false
                 }
@@ -103,6 +101,34 @@ class MainActivity : AppCompatActivity() {
                 photos[index].copyFrom(photo)
                 photoAdapter.notifyDataSetChanged()
             }
+        }
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        return gestureDetector.onTouchEvent(event!!)
+    }
+
+    private fun onSwipeUp(){
+        val intent = Intent(this, AddImageActivity::class.java)
+        intent.putExtra("type", "create")
+        startActivityForResult(intent, CREATE_PHOTO)
+    }
+
+    inner class SwipeListener: GestureDetector.SimpleOnGestureListener(){
+
+        private val SWIPE_THRESHOLD: Int = 50
+        private val SWIPE_VELOCITY_THRESHOLD: Int = 50
+
+        override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+            val diffY = e2.y - e1!!.y
+            val diffX = e2.x - e1.x
+
+            if(abs(diffY) > abs(diffX)){
+                if(diffY < 0 && abs(diffY) > SWIPE_THRESHOLD && abs(velocityY) > SWIPE_VELOCITY_THRESHOLD)
+                    onSwipeUp()
+            }
+
+            return true
         }
     }
 }
