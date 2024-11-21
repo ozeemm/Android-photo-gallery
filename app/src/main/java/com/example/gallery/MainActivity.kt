@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ItemTouchHelper
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,8 +23,37 @@ class MainActivity : AppCompatActivity() {
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         photoAdapter = PhotoAdapter(this, photos)
-
         recyclerView.adapter = photoAdapter
+
+        val itemTouchHelper = ItemTouchHelper(
+            object: ItemTouchHelper.Callback(){
+                override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+                    return makeMovementFlags(0, ItemTouchHelper.DOWN)
+                }
+
+                override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                    return false
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val index = viewHolder.adapterPosition
+                    val photoToDelete = photos[index]
+
+                    StorageUtil.deleteImage(photoToDelete)
+                    photos.remove(photoToDelete)
+                    photoAdapter.notifyDataSetChanged()
+
+                    showText("Фотография удалена")
+                }
+
+            }
+        )
+
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    private fun showText(text: String){
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
