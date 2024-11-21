@@ -3,10 +3,13 @@ package com.example.gallery
 import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class PhotoAdapter(): RecyclerView.Adapter<PhotoViewHolder>() {
+class PhotoAdapter(): RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
     private lateinit var photos: ArrayList<Photo>
     private lateinit var layoutInflater: LayoutInflater
 
@@ -36,4 +39,9 @@ class PhotoAdapter(): RecyclerView.Adapter<PhotoViewHolder>() {
         viewHolder.photoDate.text = date
     }
 
+    class PhotoViewHolder(var photoItem: View): RecyclerView.ViewHolder(photoItem) {
+        val photoImage = photoItem.findViewById<ImageView>(R.id.photoImage)
+        val photoAlbumName = photoItem.findViewById<TextView>(R.id.photoAlbumName)
+        val photoDate = photoItem.findViewById<TextView>(R.id.photoDate)
+    }
 }
