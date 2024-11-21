@@ -42,7 +42,7 @@ class AddImageActivity : AppCompatActivity()  {
 
         type = intent.getStringExtra("type")!!
         if(type == "update") {
-            photoToEdit = intent.getSerializableExtra("photo") as Photo
+            photoToEdit = intent.getSerializableExtra("photo", Photo::class.java)!!
             showPhotoInfo(photoToEdit!!)
         }
 

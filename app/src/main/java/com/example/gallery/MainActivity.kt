@@ -90,13 +90,13 @@ class MainActivity : AppCompatActivity() {
 
         when(requestCode){
             CREATE_PHOTO -> {
-                val photo = data!!.getSerializableExtra("photo") as Photo
+                val photo = data!!.getSerializableExtra("photo", Photo::class.java)!!
                 photos.add(photo)
                 photoAdapter.notifyDataSetChanged()
             }
             UPDATE_PHOTO -> {
-                val photo = data!!.getSerializableExtra("photo") as Photo
-                val index = data!!.getIntExtra("index", -1)
+                val photo = data!!.getSerializableExtra("photo", Photo::class.java)!!
+                val index = data.getIntExtra("index", -1)
 
                 photos[index].copyFrom(photo)
                 photoAdapter.notifyDataSetChanged()
