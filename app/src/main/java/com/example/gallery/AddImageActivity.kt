@@ -13,6 +13,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import java.util.*
@@ -30,6 +32,8 @@ class AddImageActivity : AppCompatActivity()  {
     private lateinit var type: String
     private var photoToEdit: Photo? = null
 
+    private lateinit var chooseImageLauncher: ActivityResultLauncher<Intent>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_image)
@@ -46,6 +50,20 @@ class AddImageActivity : AppCompatActivity()  {
             showPhotoInfo(photoToEdit!!)
         }
 
+        chooseImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+            if(result.resultCode != RESULT_OK)
+                return@registerForActivityResult
+
+            imageUri = result.data!!.data
+
+            println("Loaded: ${imageUri!!}")
+            println("Type: ${contentResolver.getType(imageUri!!)}")
+
+            // Show image
+            imageToSaveView.setImageURI(imageUri!!)
+            showPhotoInfo()
+        }
+
         imageToSaveView.setOnClickListener {
             if(type != "create")
                 return@setOnClickListener
@@ -54,8 +72,7 @@ class AddImageActivity : AppCompatActivity()  {
             val intent = Intent()
             intent.setType("image/*")
             intent.setAction(Intent.ACTION_GET_CONTENT)
-            startActivityForResult(Intent.createChooser(intent, "Select Image"), 100)
-
+            chooseImageLauncher.launch(Intent.createChooser(intent, "Select Image"))
         }
 
         buttonSave.setOnClickListener {
@@ -123,23 +140,6 @@ class AddImageActivity : AppCompatActivity()  {
             data.putExtra("index", intent.getIntExtra("index", -1))
         setResult(Activity.RESULT_OK, data)
         finish()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // On Image Loaded
-        if(resultCode != RESULT_OK)
-            return
-
-        imageUri = data?.data
-
-        println("Loaded: ${imageUri!!}")
-        println("Type: ${contentResolver.getType(imageUri!!)}")
-
-        // Show image
-        imageToSaveView.setImageURI(imageUri!!)
-        showPhotoInfo()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -1,9 +1,12 @@
 package com.example.gallery
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -16,13 +19,38 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var gestureDetector: GestureDetector
 
-    private val CREATE_PHOTO = 1
-    private val UPDATE_PHOTO = 2
+    private lateinit var createPhotoLauncher: ActivityResultLauncher<Intent>
+    private lateinit var updatePhotoLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         gestureDetector = GestureDetector(this, SwipeListener())
+
+        createPhotoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+            if(result.resultCode != RESULT_OK)
+                return@registerForActivityResult
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                val photo = result.data!!.getSerializableExtra("photo", Photo::class.java)!!
+
+                photos.add(photo)
+                photoAdapter.notifyDataSetChanged()
+            }
+        }
+
+        updatePhotoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+            if(result.resultCode != RESULT_OK)
+                return@registerForActivityResult
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val photo = result.data!!.getSerializableExtra("photo", Photo::class.java)!!
+                val index = result.data!!.getIntExtra("index", -1)
+
+                photos[index].copyFrom(photo)
+                photoAdapter.notifyDataSetChanged()
+            }
+        }
 
         photos = StorageUtil.getPhotos()
 
@@ -33,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("type", "update")
             intent.putExtra("photo", photo)
             intent.putExtra("index", index)
-            startActivityForResult(intent, UPDATE_PHOTO)
+            updatePhotoLauncher.launch(intent)
         })
         recyclerView.adapter = photoAdapter
 
@@ -76,32 +104,10 @@ class MainActivity : AppCompatActivity() {
         if(item.itemId == R.id.menuItemAdd){
             val intent = Intent(this, AddImageActivity::class.java)
             intent.putExtra("type", "create")
-            startActivityForResult(intent, CREATE_PHOTO)
+            createPhotoLauncher.launch(intent)
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if(resultCode != RESULT_OK)
-            return
-
-        when(requestCode){
-            CREATE_PHOTO -> {
-                val photo = data!!.getSerializableExtra("photo", Photo::class.java)!!
-                photos.add(photo)
-                photoAdapter.notifyDataSetChanged()
-            }
-            UPDATE_PHOTO -> {
-                val photo = data!!.getSerializableExtra("photo", Photo::class.java)!!
-                val index = data.getIntExtra("index", -1)
-
-                photos[index].copyFrom(photo)
-                photoAdapter.notifyDataSetChanged()
-            }
-        }
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -111,7 +117,7 @@ class MainActivity : AppCompatActivity() {
     private fun onSwipeUp(){
         val intent = Intent(this, AddImageActivity::class.java)
         intent.putExtra("type", "create")
-        startActivityForResult(intent, CREATE_PHOTO)
+        createPhotoLauncher.launch(intent)
     }
 
     inner class SwipeListener: GestureDetector.SimpleOnGestureListener(){
