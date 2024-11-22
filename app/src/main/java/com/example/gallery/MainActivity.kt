@@ -1,33 +1,67 @@
 package com.example.gallery
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var galleryLinearLayout: LinearLayout
+    private lateinit var photos: ArrayList<Photo>
+    private lateinit var photoAdapter: PhotoAdapter
+
+    private lateinit var gestureDetector: GestureDetector
+
+    private val CREATE_PHOTO = 1
+    private val UPDATE_PHOTO = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        gestureDetector = GestureDetector(this, SwipeListener())
 
-        galleryLinearLayout = findViewById(R.id.galleryLinearLayout)
+        photos = StorageUtil.getPhotos()
 
-        val photos = StorageUtil.getPhotos()
+        // Fill recycle view
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        photoAdapter = PhotoAdapter(this, photos, { photo: Photo, index: Int ->
+            val intent = Intent(this, AddImageActivity::class.java)
+            intent.putExtra("type", "update")
+            intent.putExtra("photo", photo)
+            intent.putExtra("index", index)
+            startActivityForResult(intent, UPDATE_PHOTO)
+        })
+        recyclerView.adapter = photoAdapter
 
-        for(photo in photos){
-            galleryLinearLayout.addView(getPhotoItemView(photo, galleryLinearLayout))
-        }
+        // Delete photos on swipe down
+        val itemTouchHelper = ItemTouchHelper(
+            object: ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.DOWN){
+                override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                    return false
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val index = viewHolder.adapterPosition
+                    val photoToDelete = photos[index]
+
+                    StorageUtil.deleteImage(photoToDelete)
+                    photos.remove(photoToDelete)
+                    photoAdapter.notifyDataSetChanged()
+
+                    showText("Фотография удалена")
+                }
+            }
+        )
+
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    private fun showText(text: String){
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -41,7 +75,8 @@ class MainActivity : AppCompatActivity() {
         // Open activity from menu
         if(item.itemId == R.id.menuItemAdd){
             val intent = Intent(this, AddImageActivity::class.java)
-            startActivityForResult(intent, 1)
+            intent.putExtra("type", "create")
+            startActivityForResult(intent, CREATE_PHOTO)
         }
 
         return super.onOptionsItemSelected(item)
@@ -53,26 +88,47 @@ class MainActivity : AppCompatActivity() {
         if(resultCode != RESULT_OK)
             return
 
-        val photo = data!!.getSerializableExtra("Photo") as Photo
-        val photoView = getPhotoItemView(photo, galleryLinearLayout)
-        galleryLinearLayout.addView(photoView)
+        when(requestCode){
+            CREATE_PHOTO -> {
+                val photo = data!!.getSerializableExtra("photo", Photo::class.java)!!
+                photos.add(photo)
+                photoAdapter.notifyDataSetChanged()
+            }
+            UPDATE_PHOTO -> {
+                val photo = data!!.getSerializableExtra("photo", Photo::class.java)!!
+                val index = data.getIntExtra("index", -1)
+
+                photos[index].copyFrom(photo)
+                photoAdapter.notifyDataSetChanged()
+            }
+        }
     }
 
-    private fun getPhotoItemView(photo: Photo, container: ViewGroup): View {
-        val photoItem = layoutInflater.inflate(R.layout.photo_item, container, false)
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        return gestureDetector.onTouchEvent(event!!)
+    }
 
-        val photoImage = photoItem.findViewById<ImageView>(R.id.photoImage)
-        val photoAlbumName = photoItem.findViewById<TextView>(R.id.photoAlbumName)
-        val photoDate = photoItem.findViewById<TextView>(R.id.photoDate)
+    private fun onSwipeUp(){
+        val intent = Intent(this, AddImageActivity::class.java)
+        intent.putExtra("type", "create")
+        startActivityForResult(intent, CREATE_PHOTO)
+    }
 
-        val album = if (photo.album != null) photo.album else "Без альбома"
-        val name = if(photo.name != null) photo.name else "Без названия"
-        val date = if(photo.date != null) photo.date else "Без даты"
+    inner class SwipeListener: GestureDetector.SimpleOnGestureListener(){
 
-        photoImage.setImageURI(Uri.parse(photo.uri))
-        photoAlbumName.text = "$album/$name"
-        photoDate.text = date
+        private val SWIPE_THRESHOLD: Int = 50
+        private val SWIPE_VELOCITY_THRESHOLD: Int = 50
 
-        return photoItem
+        override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+            val diffY = e2.y - e1!!.y
+            val diffX = e2.x - e1.x
+
+            if(abs(diffY) > abs(diffX)){
+                if(diffY < 0 && abs(diffY) > SWIPE_THRESHOLD && abs(velocityY) > SWIPE_VELOCITY_THRESHOLD)
+                    onSwipeUp()
+            }
+
+            return true
+        }
     }
 }

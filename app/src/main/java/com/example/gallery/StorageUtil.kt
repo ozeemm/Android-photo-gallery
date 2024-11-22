@@ -1,6 +1,7 @@
 package com.example.gallery
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Environment
 import java.io.File
 import java.io.FileOutputStream
@@ -27,6 +28,11 @@ object StorageUtil {
         }
 
         return path.toString()
+    }
+
+    public fun deleteImage(photo: Photo){
+        val file = File(photo.uri!!)
+        file.delete()
     }
 
     public fun getPhotos(): ArrayList<Photo>{
