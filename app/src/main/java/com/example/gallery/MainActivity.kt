@@ -22,9 +22,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var createPhotoLauncher: ActivityResultLauncher<Intent>
     private lateinit var updatePhotoLauncher: ActivityResultLauncher<Intent>
 
+    private lateinit var sharedPreferences: SharedPreferenceWorker
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        sharedPreferences = SharedPreferenceWorker(baseContext)
         gestureDetector = GestureDetector(this, SwipeListener())
 
         createPhotoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
@@ -35,6 +38,7 @@ class MainActivity : AppCompatActivity() {
                 val photo = result.data!!.getSerializableExtra("photo", Photo::class.java)!!
 
                 photos.add(photo)
+                sharedPreferences.addPhoto(photo)
                 photoAdapter.notifyDataSetChanged()
             }
         }
@@ -48,11 +52,12 @@ class MainActivity : AppCompatActivity() {
                 val index = result.data!!.getIntExtra("index", -1)
 
                 photos[index].copyFrom(photo)
+                sharedPreferences.updatePhoto(index, photos[index])
                 photoAdapter.notifyDataSetChanged()
             }
         }
 
-        photos = StorageUtil.getPhotos()
+        photos = sharedPreferences.getPhotos()
 
         // Fill recycle view
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
@@ -78,6 +83,7 @@ class MainActivity : AppCompatActivity() {
 
                     StorageUtil.deleteImage(photoToDelete)
                     photos.remove(photoToDelete)
+                    sharedPreferences.deletePhoto(index)
                     photoAdapter.notifyDataSetChanged()
 
                     showText("Фотография удалена")

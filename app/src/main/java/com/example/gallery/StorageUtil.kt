@@ -1,7 +1,7 @@
 package com.example.gallery
 
+import android.content.Context
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Environment
 import java.io.File
 import java.io.FileOutputStream
@@ -14,6 +14,7 @@ object StorageUtil {
     public fun saveImage(name: String, bitmap: Bitmap): String?{
         val dirPath = File(imagesDirPath)
         val path = File(imagesDirPath, name)
+        val p = Photo()
 
         if(!dirPath.exists())
             dirPath.mkdir()
@@ -33,24 +34,5 @@ object StorageUtil {
     public fun deleteImage(photo: Photo){
         val file = File(photo.uri!!)
         file.delete()
-    }
-
-    public fun getPhotos(): ArrayList<Photo>{
-        val photos = ArrayList<Photo>()
-
-        val dir = File(imagesDirPath)
-        val listAllFiles = dir.listFiles()
-
-        if (listAllFiles != null && listAllFiles.isNotEmpty()) {
-            for (currentFile in listAllFiles) {
-                val photo = Photo()
-                val uri = currentFile.absolutePath
-                photo.uri = uri
-
-                photos.add(photo)
-            }
-        }
-
-        return photos
     }
 }

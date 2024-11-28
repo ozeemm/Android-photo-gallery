@@ -3,6 +3,7 @@ package com.example.gallery
 import java.io.Serializable
 
 class Photo() : Serializable {
+
     var uri: String? = null
     var name: String? = null
     var date: String? = null
@@ -20,5 +21,9 @@ class Photo() : Serializable {
         this.name = photo.name
         this.date = photo.date
         this.album = photo.album
+    }
+
+    public fun toString(splitter: String): String {
+        return uri + splitter + name + splitter + date + splitter + album
     }
 }
