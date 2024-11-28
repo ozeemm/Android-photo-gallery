@@ -23,7 +23,7 @@ class Photo() : Serializable {
         this.album = photo.album
     }
 
-    public fun toString(splitter: String): String {
-        return uri + splitter + name + splitter + date + splitter + album
+    public fun toString(separator: String): String {
+        return uri + separator + name + separator + date + separator + album
     }
 }

@@ -2,20 +2,20 @@ package com.example.gallery
 
 import android.content.Context
 
-class SharedPreferenceWorker(private var context: Context) {
+class SharedPreferenceWorker(private var context: Context) : IImagesDataWorker {
 
     // ImagesData path: /data/data/com.example.gallery/shared_prefs/ImagesData.xml
     private val sharedPreferencesName = "ImagesData"
     private val imagesData = context.getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE)
-    private val splitter = "|||"
+    private val separator = "|||"
 
-    public fun getPhotos(): ArrayList<Photo>{
+    public override fun getPhotos(): ArrayList<Photo>{
         val photos = ArrayList<Photo>()
 
         val photosCount = imagesData.getInt("PhotosCount", -1)
 
         for(i in 0..<photosCount){
-            val photoStr = imagesData.getString("Photo_$i", "")?.split(splitter)!!
+            val photoStr = imagesData.getString("Photo_$i", "")?.split(separator)!!
             val photo = Photo(photoStr[0], photoStr[1], photoStr[2], photoStr[3])
             photos.add(photo)
         }
@@ -23,7 +23,7 @@ class SharedPreferenceWorker(private var context: Context) {
         return photos
     }
 
-    public fun addPhoto(photo: Photo){
+    public override fun addPhoto(photo: Photo){
         val imagesDataEditor = imagesData.edit()
 
         var photosCount = imagesData.getInt("PhotosCount", -1)
@@ -34,22 +34,22 @@ class SharedPreferenceWorker(private var context: Context) {
         else
             imagesDataEditor.putInt("PhotosCount", photosCount + 1)
 
-        val photoStr = photo.toString(splitter)
+        val photoStr = photo.toString(separator)
         imagesDataEditor.putString("Photo_$photosCount", photoStr)
 
         imagesDataEditor.apply()
     }
 
-    public fun updatePhoto(index: Int, photo: Photo){
+    public override fun updatePhoto(index: Int, photo: Photo){
         val imagesDataEditor = imagesData.edit()
 
-        val photoStr = photo.toString(splitter)
+        val photoStr = photo.toString(separator)
         imagesDataEditor.putString("Photo_$index", photoStr)
 
         imagesDataEditor.apply()
     }
 
-    public fun deletePhoto(index: Int){
+    public override fun deletePhoto(index: Int){
         val imagesDataEditor = imagesData.edit()
 
         val photosCount = imagesData.getInt("PhotosCount", -1)

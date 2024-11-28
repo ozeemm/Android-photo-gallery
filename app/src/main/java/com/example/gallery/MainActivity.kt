@@ -1,5 +1,6 @@
 package com.example.gallery
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -22,12 +23,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var createPhotoLauncher: ActivityResultLauncher<Intent>
     private lateinit var updatePhotoLauncher: ActivityResultLauncher<Intent>
 
-    private lateinit var sharedPreferences: SharedPreferenceWorker
+    private lateinit var imagesDataWorker: IImagesDataWorker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        sharedPreferences = SharedPreferenceWorker(this)
+        imagesDataWorker = TextFileWorker(this)
+
         gestureDetector = GestureDetector(this, SwipeListener())
 
         createPhotoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
@@ -38,7 +40,7 @@ class MainActivity : AppCompatActivity() {
                 val photo = result.data!!.getSerializableExtra("photo", Photo::class.java)!!
 
                 photos.add(photo)
-                sharedPreferences.addPhoto(photo)
+                imagesDataWorker.addPhoto(photo)
                 photoAdapter.notifyDataSetChanged()
             }
         }
@@ -52,12 +54,12 @@ class MainActivity : AppCompatActivity() {
                 val index = result.data!!.getIntExtra("index", -1)
 
                 photos[index].copyFrom(photo)
-                sharedPreferences.updatePhoto(index, photos[index])
+                imagesDataWorker.updatePhoto(index, photos[index])
                 photoAdapter.notifyDataSetChanged()
             }
         }
 
-        photos = sharedPreferences.getPhotos()
+        photos = imagesDataWorker.getPhotos()
 
         // Fill recycle view
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
@@ -83,19 +85,15 @@ class MainActivity : AppCompatActivity() {
 
                     StorageUtil.deleteImage(photoToDelete)
                     photos.remove(photoToDelete)
-                    sharedPreferences.deletePhoto(index)
+                    imagesDataWorker.deletePhoto(index)
                     photoAdapter.notifyDataSetChanged()
 
-                    showText("Фотография удалена")
+                    Toast.makeText(this@MainActivity, "Фотография удалена", Toast.LENGTH_SHORT).show()
                 }
             }
         )
 
         itemTouchHelper.attachToRecyclerView(recyclerView)
-    }
-
-    private fun showText(text: String){
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
