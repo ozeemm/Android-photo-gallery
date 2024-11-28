@@ -1,4 +1,4 @@
-package com.example.gallery
+package com.example.gallery.Model
 
 import java.io.Serializable
 

@@ -1,4 +1,6 @@
-package com.example.gallery
+package com.example.gallery.Storage
+
+import com.example.gallery.Model.Photo
 
 interface IImagesDataWorker {
     public fun getPhotos(): ArrayList<Photo>

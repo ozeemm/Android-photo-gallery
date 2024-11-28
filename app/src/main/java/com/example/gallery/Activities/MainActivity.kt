@@ -1,6 +1,5 @@
-package com.example.gallery
+package com.example.gallery.Activities
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -11,6 +10,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gallery.*
+import com.example.gallery.Adapters.PhotoAdapter
+import com.example.gallery.Model.Photo
+import com.example.gallery.Storage.IImagesDataWorker
+import com.example.gallery.Storage.StorageUtil
+import com.example.gallery.Storage.TextFileWorker
 import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {

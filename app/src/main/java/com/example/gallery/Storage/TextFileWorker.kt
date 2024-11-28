@@ -1,6 +1,7 @@
-package com.example.gallery
+package com.example.gallery.Storage
 
 import android.content.Context
+import com.example.gallery.Model.Photo
 import java.io.File
 import java.lang.Integer.parseInt
 

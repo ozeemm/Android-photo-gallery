@@ -1,7 +1,8 @@
-package com.example.gallery
+package com.example.gallery.Storage
 
 import android.graphics.Bitmap
 import android.os.Environment
+import com.example.gallery.Model.Photo
 import java.io.File
 import java.io.FileOutputStream
 

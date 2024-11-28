@@ -1,6 +1,7 @@
-package com.example.gallery
+package com.example.gallery.Storage
 
 import android.content.Context
+import com.example.gallery.Model.Photo
 
 class SharedPreferenceWorker(private var context: Context) : IImagesDataWorker {
 
