@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        sharedPreferences = SharedPreferenceWorker(baseContext)
+        sharedPreferences = SharedPreferenceWorker(this)
         gestureDetector = GestureDetector(this, SwipeListener())
 
         createPhotoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
