@@ -3,6 +3,9 @@
     <item
             android:id="@+id/menuItemAdd"
             android:orderInCategory="1"
-            android:title="Добавить"
-            app:showAsAction="ifRoom|withText"/>
+            android:title="Добавить"/>
+    <item
+            android:id="@+id/menuItemExportPdf"
+            android:orderInCategory="2"
+            android:title="Экспорт в PDF"/>
 </menu>

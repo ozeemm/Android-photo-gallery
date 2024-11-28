@@ -14,6 +14,7 @@ import com.example.gallery.*
 import com.example.gallery.Adapters.PhotoAdapter
 import com.example.gallery.Model.Photo
 import com.example.gallery.Storage.IImagesDataWorker
+import com.example.gallery.Storage.PdfExporter
 import com.example.gallery.Storage.StorageUtil
 import com.example.gallery.Storage.TextFileWorker
 import kotlin.math.abs
@@ -33,9 +34,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        imagesDataWorker = TextFileWorker(this)
-
         gestureDetector = GestureDetector(this, SwipeListener())
+
+        imagesDataWorker = TextFileWorker(this)
+        photos = imagesDataWorker.getPhotos()
 
         createPhotoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
             if(result.resultCode != RESULT_OK)
@@ -63,8 +65,6 @@ class MainActivity : AppCompatActivity() {
                 photoAdapter.notifyDataSetChanged()
             }
         }
-
-        photos = imagesDataWorker.getPhotos()
 
         // Fill recycle view
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
@@ -114,6 +114,10 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AddImageActivity::class.java)
             intent.putExtra("type", "create")
             createPhotoLauncher.launch(intent)
+        }
+        else if(item.itemId == R.id.menuItemExportPdf){
+            PdfExporter.export(photos)
+            Toast.makeText(this, "Экспортировано в PDF", Toast.LENGTH_SHORT).show()
         }
 
         return super.onOptionsItemSelected(item)
