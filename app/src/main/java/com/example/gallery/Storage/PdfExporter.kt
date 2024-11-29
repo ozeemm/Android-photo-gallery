@@ -21,8 +21,6 @@ object PdfExporter {
 
     private val fileName = "Android-photo-gallery.pdf"
 
-    private val COURIER = "src/res/fonts/couriercyrps.ttf"
-
     public fun export(photos: ArrayList<Photo>){
         val pdfDir = File(fileDirPath)
         val pdfFile = File(fileDirPath, fileName)
