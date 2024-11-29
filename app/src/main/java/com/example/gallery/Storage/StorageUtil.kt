@@ -1,11 +1,10 @@
-package com.example.gallery
+package com.example.gallery.Storage
 
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Environment
+import com.example.gallery.Model.Photo
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.collections.ArrayList
 
 object StorageUtil {
     private val imagesDirPath = Environment.getExternalStoragePublicDirectory(
@@ -33,24 +32,5 @@ object StorageUtil {
     public fun deleteImage(photo: Photo){
         val file = File(photo.uri!!)
         file.delete()
-    }
-
-    public fun getPhotos(): ArrayList<Photo>{
-        val photos = ArrayList<Photo>()
-
-        val dir = File(imagesDirPath)
-        val listAllFiles = dir.listFiles()
-
-        if (listAllFiles != null && listAllFiles.isNotEmpty()) {
-            for (currentFile in listAllFiles) {
-                val photo = Photo()
-                val uri = currentFile.absolutePath
-                photo.uri = uri
-
-                photos.add(photo)
-            }
-        }
-
-        return photos
     }
 }

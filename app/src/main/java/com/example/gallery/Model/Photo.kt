@@ -1,8 +1,9 @@
-package com.example.gallery
+package com.example.gallery.Model
 
 import java.io.Serializable
 
 class Photo() : Serializable {
+
     var uri: String? = null
     var name: String? = null
     var date: String? = null
@@ -20,5 +21,9 @@ class Photo() : Serializable {
         this.name = photo.name
         this.date = photo.date
         this.album = photo.album
+    }
+
+    public fun toString(separator: String): String {
+        return uri + separator + name + separator + date + separator + album
     }
 }

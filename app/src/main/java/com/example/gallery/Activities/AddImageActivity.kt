@@ -1,4 +1,4 @@
-package com.example.gallery
+package com.example.gallery.Activities
 
 import android.app.Activity
 import android.content.Intent
@@ -17,6 +17,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import com.example.gallery.Model.Photo
+import com.example.gallery.R
+import com.example.gallery.Storage.StorageUtil
 import java.util.*
 
 class AddImageActivity : AppCompatActivity()  {
