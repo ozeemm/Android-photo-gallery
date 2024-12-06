@@ -1,5 +1,6 @@
 [versions]
 agp = "8.6.0-alpha07"
+greendaoGradlePlugin = "3.3.1"
 itext7CoreAndroid = "7.2.3"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -13,6 +14,7 @@ constraintlayout = "2.1.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+greendao-gradle-plugin = { module = "org.greenrobot:greendao-gradle-plugin", version.ref = "greendaoGradlePlugin" }
 itext7-core-android = { module = "com.itextpdf.android:itext7-core-android", version.ref = "itext7CoreAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
