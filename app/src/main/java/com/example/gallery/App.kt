@@ -16,6 +16,6 @@ class App : Application() {
             applicationContext,
             PhotoDatabase::class.java,
             PhotoDatabase.name
-        ).allowMainThreadQueries().build()
+        ).fallbackToDestructiveMigration().allowMainThreadQueries().build()
     }
 }

@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -19,7 +18,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gallery.Model.Photo
 import com.example.gallery.R
-import com.example.gallery.Storage.StorageUtil
+import com.example.gallery.Utils.BitmapConverter
 import java.util.*
 
 class AddImageActivity : AppCompatActivity()  {
@@ -96,30 +95,17 @@ class AddImageActivity : AppCompatActivity()  {
             return
         }
 
-        val photo = Photo(
-            imageUri.toString(),
-            inputName.text.toString(),
-            inputDate.text.toString(),
-            inputAlbumName.text.toString()
-        )
-
         val source = ImageDecoder.createSource(contentResolver, imageUri!!)
         val bitmap = ImageDecoder.decodeBitmap(source)
 
-        val imageExtension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(imageUri!!))
-        val fileName = "${getDefaultPhotoName()}.${imageExtension}"
+        val photo = Photo(
+            inputName.text.toString(),
+            inputDate.text.toString(),
+            inputAlbumName.text.toString(),
+            BitmapConverter.bitmapToString(bitmap)
+        )
 
-        val path = StorageUtil.saveImage(fileName, bitmap)
-
-        if(path == null)
-            Toast.makeText(this, "Ошибка: Фотография не может быть сохранена", Toast.LENGTH_SHORT).show()
-        else {
-            Toast.makeText(this, "Фотография сохранена", Toast.LENGTH_SHORT).show()
-            println("Saved image to: $path")
-
-            photo.uri = path
-            finishActivity(photo)
-        }
+        finishActivity(photo)
     }
 
     private fun editImage(photo: Photo){
@@ -166,7 +152,7 @@ class AddImageActivity : AppCompatActivity()  {
     }
 
     private fun showPhotoInfo(photo: Photo){
-        imageToSaveView.setImageURI(Uri.parse(photo.uri))
+        imageToSaveView.setImageBitmap(photo.bitmap)
         inputName.setText(photo.name)
         inputAlbumName.setText(photo.album)
         inputDate.setText(photo.date)

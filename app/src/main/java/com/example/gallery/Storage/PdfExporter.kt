@@ -1,5 +1,6 @@
 package com.example.gallery.Storage
 
+import android.graphics.Bitmap
 import android.os.Environment
 import com.example.gallery.Model.Photo
 import com.itextpdf.io.font.constants.StandardFonts
@@ -13,6 +14,7 @@ import com.itextpdf.layout.element.AreaBreak
 import com.itextpdf.layout.element.Image
 import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.properties.HorizontalAlignment
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 object PdfExporter {
@@ -21,7 +23,7 @@ object PdfExporter {
 
     private val fileName = "Android-photo-gallery.pdf"
 
-    public fun export(photos: ArrayList<Photo>){
+    fun export(photos: ArrayList<Photo>){
         val pdfDir = File(fileDirPath)
         val pdfFile = File(fileDirPath, fileName)
 
@@ -42,9 +44,13 @@ object PdfExporter {
             document.add(Paragraph("Name: ${photo.name}\n"))
             document.add(Paragraph("Album: ${photo.album}\n"))
             document.add(Paragraph("Date: ${photo.date}"))
-            // document.add(Paragraph("URI: ${photo.uri}"))
 
-            val imageData = ImageDataFactory.create(photo.uri)
+            val stream = ByteArrayOutputStream()
+            photo.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            val imageBytes = stream.toByteArray()
+            stream.close()
+
+            val imageData = ImageDataFactory.create(imageBytes)
             val image = Image(imageData)
             image.setAutoScale(true)
             image.setHorizontalAlignment(HorizontalAlignment.CENTER)

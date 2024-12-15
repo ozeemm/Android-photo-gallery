@@ -6,7 +6,7 @@ import com.example.gallery.Model.Photo
 
 @Database(
     entities = [Photo::class],
-    version = 1
+    version = 2
 )
 abstract class PhotoDatabase: RoomDatabase() {
 
