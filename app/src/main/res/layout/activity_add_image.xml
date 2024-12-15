@@ -32,7 +32,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/imageToSaveView"
             android:layout_toEndOf="@id/textName"
-            android:singleLine="true"/>
+            android:singleLine="true"
+    />
     <TextView
             android:id="@+id/textAlbumName"
             android:layout_width="100dp"
@@ -45,11 +46,29 @@
             android:layout_marginEnd="4dp"/>
     <EditText
             android:id="@+id/inputAlbumName"
-            android:layout_width="270dp"
+            android:layout_width="137dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/inputName"
             android:layout_toEndOf="@id/textAlbumName"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:visibility="invisible"/>
+
+    <Spinner
+            android:id="@+id/spinnerAlbumName"
+            android:layout_width="137dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/inputName"
+            android:layout_toEndOf="@id/textAlbumName"
+            android:layout_marginTop="12dp" android:layout_marginStart="7dp"/>
+    <CheckBox
+        android:id="@+id/newAlbumNameCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/inputName"
+        android:layout_toEndOf="@id/inputAlbumName"
+        android:text="Новый альбом"
+    />
+
     <TextView
             android:id="@+id/textDate"
             android:layout_width="100dp"

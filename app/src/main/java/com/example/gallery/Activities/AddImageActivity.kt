@@ -8,18 +8,25 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import com.example.gallery.Adapters.AlbumSpinnerAdapter
+import com.example.gallery.App
+import com.example.gallery.Model.Album
 import com.example.gallery.Model.Photo
 import com.example.gallery.R
 import com.example.gallery.Utils.BitmapConverter
 import java.util.*
+import kotlin.collections.ArrayList
 
 class AddImageActivity : AppCompatActivity()  {
 
@@ -28,6 +35,11 @@ class AddImageActivity : AppCompatActivity()  {
     private lateinit var inputName: EditText
     private lateinit var inputAlbumName: EditText
     private lateinit var inputDate: EditText
+    private lateinit var spinnerAlbumName: Spinner
+    private lateinit var newAlbumCheckbox: CheckBox
+    private lateinit var spinnerAdapter: AlbumSpinnerAdapter
+
+    private val albums = ArrayList<Album>()
 
     private var imageUri: Uri? = null
 
@@ -45,6 +57,21 @@ class AddImageActivity : AppCompatActivity()  {
         inputName = findViewById(R.id.inputName)
         inputAlbumName = findViewById(R.id.inputAlbumName)
         inputDate = findViewById(R.id.inputDate)
+        spinnerAlbumName = findViewById(R.id.spinnerAlbumName)
+        newAlbumCheckbox = findViewById(R.id.newAlbumNameCheckBox)
+
+        spinnerAdapter = AlbumSpinnerAdapter(this, android.R.layout.simple_spinner_item, albums)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice)
+        spinnerAlbumName.adapter = spinnerAdapter
+
+        App.database.albumDao().getAlbums().observe(this){ list ->
+            albums.clear()
+            albums.addAll(list)
+            spinnerAdapter.notifyDataSetChanged()
+
+            if(type == "update")
+                showPhotoInfo()
+        }
 
         type = intent.getStringExtra("type")!!
         if(type == "update") {
@@ -57,13 +84,22 @@ class AddImageActivity : AppCompatActivity()  {
                 return@registerForActivityResult
 
             imageUri = result.data!!.data
-
             println("Loaded: ${imageUri!!}")
-            println("Type: ${contentResolver.getType(imageUri!!)}")
 
             // Show image
             imageToSaveView.setImageURI(imageUri!!)
             showPhotoInfo()
+        }
+
+        newAlbumCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
+            if(isChecked){
+                inputAlbumName.visibility = View.VISIBLE
+                spinnerAlbumName.visibility = View.INVISIBLE
+            }
+            else{
+                inputAlbumName.visibility = View.INVISIBLE
+                spinnerAlbumName.visibility = View.VISIBLE
+            }
         }
 
         imageToSaveView.setOnClickListener {
@@ -101,7 +137,6 @@ class AddImageActivity : AppCompatActivity()  {
         val photo = Photo(
             inputName.text.toString(),
             inputDate.text.toString(),
-            inputAlbumName.text.toString(),
             BitmapConverter.bitmapToString(bitmap)
         )
 
@@ -116,7 +151,6 @@ class AddImageActivity : AppCompatActivity()  {
 
         photo.name = inputName.text.toString()
         photo.date = inputDate.text.toString()
-        photo.album = inputAlbumName.text.toString()
 
         Toast.makeText(this, "Фотография изменена", Toast.LENGTH_SHORT).show()
         finishActivity(photo)
@@ -125,6 +159,16 @@ class AddImageActivity : AppCompatActivity()  {
     private fun finishActivity(photo: Photo){
         val data = Intent()
         data.putExtra("photo", photo)
+
+        if(newAlbumCheckbox.isChecked){
+            data.putExtra("is_new_album", true)
+            data.putExtra("new_album", inputAlbumName.text.toString())
+        } else{
+            data.putExtra("is_new_album", false)
+            val selectedAlbum: Album = spinnerAlbumName.selectedItem as Album
+            photo.albumId = selectedAlbum.id
+        }
+
         setResult(Activity.RESULT_OK, data)
         finish()
     }
@@ -147,14 +191,14 @@ class AddImageActivity : AppCompatActivity()  {
 
     private fun showPhotoInfo(){
         inputName.setText(getDefaultPhotoName())
-        inputAlbumName.setText("Без альбома")
         inputDate.setText(getCurrentDateString())
     }
 
     private fun showPhotoInfo(photo: Photo){
         imageToSaveView.setImageBitmap(photo.bitmap)
         inputName.setText(photo.name)
-        inputAlbumName.setText(photo.album)
+        val album = App.database.albumDao().getAlbumById(photo.albumId)
+        spinnerAlbumName.setSelection(spinnerAdapter.getPosition(album))
         inputDate.setText(photo.date)
     }
 

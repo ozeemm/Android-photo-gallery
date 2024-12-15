@@ -8,6 +8,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gallery.App
 import com.example.gallery.Model.Photo
 import com.example.gallery.R
 
@@ -34,12 +35,12 @@ class PhotoAdapter(): RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
     override fun onBindViewHolder(viewHolder: PhotoViewHolder, position: Int) {
         val photo = photos[position]
 
-        val album = photo.album
+        val album = App.database.albumDao().getAlbumById(photo.albumId).name
         val name = photo.name
         val date = photo.date
 
         viewHolder.photoImage.setImageBitmap(photo.bitmap)
-        viewHolder.photoAlbumName.text = album + '/' + name
+        viewHolder.photoAlbumName.text = "$album/$name"
         viewHolder.photoDate.text = date
         viewHolder.editButton.setOnClickListener {
             editButtonFunc(photo, position)

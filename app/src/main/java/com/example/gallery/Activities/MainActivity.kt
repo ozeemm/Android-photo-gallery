@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gallery.*
 import com.example.gallery.Adapters.PhotoAdapter
+import com.example.gallery.Model.Album
 import com.example.gallery.Model.Photo
 import com.example.gallery.Storage.*
 import kotlin.math.abs
@@ -37,6 +38,16 @@ class MainActivity : AppCompatActivity() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
                 val photo = result.data!!.getSerializableExtra("photo", Photo::class.java)!!
+
+                val isNewAlbum = result.data!!.getBooleanExtra("is_new_album", false)
+                if(isNewAlbum){
+                    val albumName = result.data!!.getStringExtra("new_album")!!
+                    val album = Album(albumName)
+
+                    val albumId = App.database.albumDao().insertAlbum(album)
+                    photo.albumId = albumId
+                }
+
                 App.database.photoDao().insertPhoto(photo)
             }
         }
@@ -47,6 +58,16 @@ class MainActivity : AppCompatActivity() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val photo = result.data!!.getSerializableExtra("photo", Photo::class.java)!!
+
+                val isNewAlbum = result.data!!.getBooleanExtra("is_new_album", false)
+                if(isNewAlbum){
+                    val albumName = result.data!!.getStringExtra("new_album")!!
+                    val album = Album(albumName)
+
+                    val albumId = App.database.albumDao().insertAlbum(album)
+                    photo.albumId = albumId
+                }
+
                 App.database.photoDao().updatePhoto(photo)
             }
         }

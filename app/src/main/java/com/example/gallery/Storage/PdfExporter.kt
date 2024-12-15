@@ -2,6 +2,7 @@ package com.example.gallery.Storage
 
 import android.graphics.Bitmap
 import android.os.Environment
+import com.example.gallery.App
 import com.example.gallery.Model.Photo
 import com.itextpdf.io.font.constants.StandardFonts
 import com.itextpdf.io.image.ImageDataFactory
@@ -41,8 +42,10 @@ object PdfExporter {
         document.setFont(font)
 
         photos.forEachIndexed{ i, photo ->
+            val album = App.database.albumDao().getAlbumById(photo.albumId)
+
             document.add(Paragraph("Name: ${photo.name}\n"))
-            document.add(Paragraph("Album: ${photo.album}\n"))
+            document.add(Paragraph("Album: ${album.name}\n"))
             document.add(Paragraph("Date: ${photo.date}"))
 
             val stream = ByteArrayOutputStream()
