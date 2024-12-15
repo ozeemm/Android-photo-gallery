@@ -18,7 +18,7 @@ import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var photos: ArrayList<Photo>
+    private var photos = ArrayList<Photo>()
     private lateinit var photoAdapter: PhotoAdapter
 
     private lateinit var gestureDetector: GestureDetector
@@ -26,15 +26,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var createPhotoLauncher: ActivityResultLauncher<Intent>
     private lateinit var updatePhotoLauncher: ActivityResultLauncher<Intent>
 
-    private lateinit var imagesDataWorker: IImagesDataWorker
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         gestureDetector = GestureDetector(this, SwipeListener())
-
-        imagesDataWorker = TextFileWorker(this)
-        photos = imagesDataWorker.getPhotos()
 
         createPhotoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
             if(result.resultCode != RESULT_OK)
@@ -42,10 +37,7 @@ class MainActivity : AppCompatActivity() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
                 val photo = result.data!!.getSerializableExtra("photo", Photo::class.java)!!
-
-                photos.add(photo)
-                imagesDataWorker.addPhoto(photo)
-                photoAdapter.notifyDataSetChanged()
+                App.database.photoDao().insertPhoto(photo)
             }
         }
 
@@ -55,11 +47,7 @@ class MainActivity : AppCompatActivity() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val photo = result.data!!.getSerializableExtra("photo", Photo::class.java)!!
-                val index = result.data!!.getIntExtra("index", -1)
-
-                photos[index].copyFrom(photo)
-                imagesDataWorker.updatePhoto(index, photos[index])
-                photoAdapter.notifyDataSetChanged()
+                App.database.photoDao().updatePhoto(photo)
             }
         }
 
@@ -69,10 +57,15 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AddImageActivity::class.java)
             intent.putExtra("type", "update")
             intent.putExtra("photo", photo)
-            intent.putExtra("index", index)
             updatePhotoLauncher.launch(intent)
         })
         recyclerView.adapter = photoAdapter
+
+        App.database.photoDao().getPhotos().observe(this){ list ->
+            photos.clear()
+            photos.addAll(list)
+            photoAdapter.notifyDataSetChanged()
+        }
 
         // Delete photos on swipe down
         val itemTouchHelper = ItemTouchHelper(
@@ -84,11 +77,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val index = viewHolder.adapterPosition
                     val photoToDelete = photos[index]
-
-                    StorageUtil.deleteImage(photoToDelete)
-                    photos.remove(photoToDelete)
-                    imagesDataWorker.deletePhoto(index)
-                    photoAdapter.notifyDataSetChanged()
+                    App.database.photoDao().deletePhoto(photoToDelete)
 
                     Toast.makeText(this@MainActivity, "Фотография удалена", Toast.LENGTH_SHORT).show()
                 }

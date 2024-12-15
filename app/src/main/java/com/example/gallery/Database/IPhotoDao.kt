@@ -1,5 +1,6 @@
 package com.example.gallery.Database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.gallery.Model.Photo
 
@@ -7,7 +8,7 @@ import com.example.gallery.Model.Photo
 interface IPhotoDao {
 
     @Query("SELECT * FROM photos")
-    fun getPhotos(): List<Photo>
+    fun getPhotos(): LiveData<List<Photo>>
 
     @Insert
     fun insertPhoto(photo: Photo)

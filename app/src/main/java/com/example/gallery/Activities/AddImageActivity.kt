@@ -139,8 +139,6 @@ class AddImageActivity : AppCompatActivity()  {
     private fun finishActivity(photo: Photo){
         val data = Intent()
         data.putExtra("photo", photo)
-        if(type == "update")
-            data.putExtra("index", intent.getIntExtra("index", -1))
         setResult(Activity.RESULT_OK, data)
         finish()
     }
