@@ -1,29 +1,23 @@
 package com.example.gallery.Model
 
+import android.graphics.Bitmap
+import androidx.room.*
+import com.example.gallery.Utils.BitmapConverter
 import java.io.Serializable
 
-class Photo() : Serializable {
+@Entity(tableName = "photos",
+    foreignKeys = [
+        ForeignKey(entity = Album::class, parentColumns = ["id"], childColumns = ["albumId"], onDelete = ForeignKey.CASCADE)
+    ])
+data class Photo(
+    @ColumnInfo(name="name") var name: String,
+    @ColumnInfo(name="date") var date: String,
+    @ColumnInfo(name="image_string") var imageString: String,
+) : Serializable{
 
-    var uri: String? = null
-    var name: String? = null
-    var date: String? = null
-    var album: String? = null
+    @PrimaryKey(autoGenerate = true) var id: Long = 0
+    @ColumnInfo(name="albumId") var albumId: Long = 0
 
-    constructor(uri: String, name: String, date: String?, album: String?) : this() {
-        this.uri = uri
-        this.name = name
-        this.date = date
-        this.album = album
-    }
-
-    public fun copyFrom(photo: Photo){
-        this.uri = photo.uri
-        this.name = photo.name
-        this.date = photo.date
-        this.album = photo.album
-    }
-
-    public fun toString(separator: String): String {
-        return uri + separator + name + separator + date + separator + album
-    }
+    val bitmap: Bitmap
+        get() = BitmapConverter.stringToBitmap(imageString)!!
 }

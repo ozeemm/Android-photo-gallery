@@ -1,7 +1,8 @@
 [versions]
 agp = "8.6.0-alpha07"
+compilerVersion = "x.x.x"
 itext7CoreAndroid = "7.2.3"
-kotlin = "1.9.0"
+kotlin = "2.0.21"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -10,8 +11,14 @@ appcompat = "1.6.1"
 material = "1.10.0"
 activity = "1.9.2"
 constraintlayout = "2.1.4"
+roomVersion="2.6.1"
+kspVersion="2.0.21-1.0.27"
 
 [libraries]
+androidx-room = {group="androidx.room", name="room-runtime", version.ref="roomVersion"}
+androidx-room-annotation-processor ={group="androidx.room", name="room-compiler", version.ref="roomVersion"}
+androidx-room-ktx ={group="androidx.room", name ="room-ktx", version.ref="roomVersion"}
+
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 itext7-core-android = { module = "com.itextpdf.android:itext7-core-android", version.ref = "itext7CoreAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -25,4 +32,4 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
+ksp={id="com.google.devtools.ksp", version.ref="kspVersion"}
