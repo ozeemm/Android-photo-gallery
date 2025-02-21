@@ -18,6 +18,12 @@ import com.example.gallery.Model.Photo
 import com.example.gallery.Storage.*
 import kotlin.math.abs
 
+// TODO
+// ===== Что распаллелить =====
+// 1. Работа с БД (Thread)
+// 2. Экспорт в папку Pictures по альбомам (Coroutine)
+// 3. Дублирование картинок (?)
+
 class MainActivity : AppCompatActivity() {
 
     private var photos = ArrayList<Photo>()
@@ -122,6 +128,10 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AddImageActivity::class.java)
             intent.putExtra("type", "create")
             createPhotoLauncher.launch(intent)
+        }
+        else if(item.itemId == R.id.menuItemExportPictures){
+            PicturesExporter.export(photos)
+            Toast.makeText(this, "Экспортировано", Toast.LENGTH_SHORT).show()
         }
         else if(item.itemId == R.id.menuItemExportPdf){
             PdfExporter.export(photos)
