@@ -6,6 +6,8 @@ import android.graphics.ImageDecoder
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Bundle
+import android.os.TransactionTooLargeException
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -169,8 +171,14 @@ class AddImageActivity : AppCompatActivity()  {
             photo.albumId = selectedAlbum.id
         }
 
-        setResult(Activity.RESULT_OK, data)
-        finish()
+        try {
+            setResult(Activity.RESULT_OK, data)
+            finish()
+        } catch(e: Exception){
+            Toast.makeText(this, "Ошибка: фотография слишком большая", Toast.LENGTH_SHORT).show()
+            setResult(Activity.RESULT_CANCELED)
+            finish()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
