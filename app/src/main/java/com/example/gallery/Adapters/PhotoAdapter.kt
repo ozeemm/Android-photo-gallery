@@ -35,7 +35,7 @@ class PhotoAdapter(): RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
     override fun onBindViewHolder(viewHolder: PhotoViewHolder, position: Int) {
         val photo = photos[position]
 
-        val album = App.database.albumDao().getAlbumById(photo.albumId).name
+        val album = photo.album!!.name
         val name = photo.name
         val date = photo.date
 

@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.itext7.core.android)
     implementation(libs.androidx.room)
+    implementation(libs.kotlinx.coroutines.core)
     annotationProcessor (libs.androidx.room.annotation.processor)
     ksp(libs.androidx.room.annotation.processor)
     implementation(libs.androidx.room.ktx)

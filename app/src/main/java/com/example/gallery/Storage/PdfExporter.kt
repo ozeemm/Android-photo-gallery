@@ -42,7 +42,7 @@ object PdfExporter {
         document.setFont(font)
 
         photos.forEachIndexed{ i, photo ->
-            val album = App.database.albumDao().getAlbumById(photo.albumId)
+            val album = photo.album!!
 
             document.add(Paragraph("Name: ${photo.name}\n"))
             document.add(Paragraph("Album: ${album.name}\n"))

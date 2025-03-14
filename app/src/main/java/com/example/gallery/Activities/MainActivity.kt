@@ -3,7 +3,6 @@ package com.example.gallery.Activities
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -17,12 +16,7 @@ import com.example.gallery.Model.Album
 import com.example.gallery.Model.Photo
 import com.example.gallery.Storage.*
 import kotlin.math.abs
-
-// TODO
-// ===== Что распаллелить =====
-// 1. Работа с БД (Thread)
-// 2. Экспорт в папку Pictures по альбомам (Coroutine)
-// 3. Дублирование картинок (?)
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -92,6 +86,9 @@ class MainActivity : AppCompatActivity() {
         App.database.photoDao().getPhotos().observe(this){ list ->
             photos.clear()
             photos.addAll(list)
+            photos.forEach{ p ->
+                p.album = App.database.albumDao().getAlbumById(p.albumId)
+            }
             photoAdapter.notifyDataSetChanged()
         }
 
@@ -130,10 +127,16 @@ class MainActivity : AppCompatActivity() {
             createPhotoLauncher.launch(intent)
         }
         else if(item.itemId == R.id.menuItemExportPictures){
-            PicturesExporter.export(photos)
-            Toast.makeText(this, "Экспортировано", Toast.LENGTH_SHORT).show()
+            val thread = Thread {
+                PicturesExporter.exportAll(photos)
+                runOnUiThread {
+                    Toast.makeText(this, "Экспортировано", Toast.LENGTH_SHORT).show()
+                }
+            }.start()
         }
+
         else if(item.itemId == R.id.menuItemExportPdf){
+
             PdfExporter.export(photos)
             Toast.makeText(this, "Экспортировано в PDF", Toast.LENGTH_SHORT).show()
         }

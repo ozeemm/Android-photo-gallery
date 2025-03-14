@@ -71,8 +71,9 @@ class AddImageActivity : AppCompatActivity()  {
             albums.addAll(list)
             spinnerAdapter.notifyDataSetChanged()
 
-            if(type == "update")
-                showPhotoInfo()
+            if(type == "update") {
+                showPhotoInfo(photoToEdit!!) // FIX
+            }
         }
 
         type = intent.getStringExtra("type")!!
@@ -205,8 +206,7 @@ class AddImageActivity : AppCompatActivity()  {
     private fun showPhotoInfo(photo: Photo){
         imageToSaveView.setImageBitmap(photo.bitmap)
         inputName.setText(photo.name)
-        val album = App.database.albumDao().getAlbumById(photo.albumId)
-        spinnerAlbumName.setSelection(spinnerAdapter.getPosition(album))
+        spinnerAlbumName.setSelection(spinnerAdapter.getPosition(photo.album!!))
         inputDate.setText(photo.date)
     }
 

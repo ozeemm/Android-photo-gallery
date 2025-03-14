@@ -22,8 +22,14 @@ data class Photo(
     @ColumnInfo(name="image_string") var imageString: String,
 ) : Serializable{
 
-    @PrimaryKey(autoGenerate = true) var id: Long = 0
-    @ColumnInfo(name="albumId") var albumId: Long = 0
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0
+
+    @ColumnInfo(name="albumId")
+    var albumId: Long = 0
+
+    @Ignore
+    var album: Album? = null
 
     val bitmap: Bitmap
         get() = BitmapConverter.stringToBitmap(imageString)!!
