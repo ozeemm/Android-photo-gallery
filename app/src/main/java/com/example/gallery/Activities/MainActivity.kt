@@ -134,11 +134,13 @@ class MainActivity : AppCompatActivity() {
                 }
             }.start()
         }
-
         else if(item.itemId == R.id.menuItemExportPdf){
-
-            PdfExporter.export(photos)
-            Toast.makeText(this, "Экспортировано в PDF", Toast.LENGTH_SHORT).show()
+            val thread = Thread {
+                PdfExporter.export(photos)
+                runOnUiThread {
+                    Toast.makeText(this, "Экспортировано в PDF", Toast.LENGTH_SHORT).show()
+                }
+            }.start()
         }
 
         return super.onOptionsItemSelected(item)
