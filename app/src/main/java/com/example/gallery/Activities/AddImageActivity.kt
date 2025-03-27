@@ -2,13 +2,12 @@ package com.example.gallery.Activities
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.ImageDecoder
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.icu.text.SimpleDateFormat
-import android.net.Uri
 import android.os.Bundle
-import android.os.TransactionTooLargeException
-import android.util.Log
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
@@ -21,12 +20,18 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toBitmap
 import com.example.gallery.Adapters.AlbumSpinnerAdapter
 import com.example.gallery.App
+import com.example.gallery.Enums.AddImageActivityType
 import com.example.gallery.Model.Album
 import com.example.gallery.Model.Photo
 import com.example.gallery.R
 import com.example.gallery.Utils.BitmapConverter
+import kotlinx.coroutines.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -43,12 +48,13 @@ class AddImageActivity : AppCompatActivity()  {
 
     private val albums = ArrayList<Album>()
 
-    private var imageUri: Uri? = null
-
-    private lateinit var type: String
+    private lateinit var type: AddImageActivityType
+    private var isImageLoaded = false
     private var photoToEdit: Photo? = null
 
     private lateinit var chooseImageLauncher: ActivityResultLauncher<Intent>
+
+    private val randomImagesUrl = "https://picsum.photos/800/600"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,27 +76,16 @@ class AddImageActivity : AppCompatActivity()  {
             albums.addAll(list)
             spinnerAdapter.notifyDataSetChanged()
 
-            if(type == "update") {
+            if(type == AddImageActivityType.update) {
                 showPhotoInfo(photoToEdit!!) // FIX
             }
         }
 
-        type = intent.getStringExtra("type")!!
-        if(type == "update") {
+        type = AddImageActivityType.valueOf(intent.getStringExtra("type")!!)
+        if(type == AddImageActivityType.update) {
             photoToEdit = intent.getSerializableExtra("photo", Photo::class.java)!!
+            isImageLoaded = true
             showPhotoInfo(photoToEdit!!)
-        }
-
-        chooseImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
-            if(result.resultCode != RESULT_OK)
-                return@registerForActivityResult
-
-            imageUri = result.data!!.data
-            println("Loaded: ${imageUri!!}")
-
-            // Show image
-            imageToSaveView.setImageURI(imageUri!!)
-            showPhotoInfo()
         }
 
         newAlbumCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -105,7 +100,7 @@ class AddImageActivity : AppCompatActivity()  {
         }
 
         imageToSaveView.setOnClickListener {
-            if(type != "create")
+            if(type != AddImageActivityType.create)
                 return@setOnClickListener
 
             // Load image on activity
@@ -115,16 +110,29 @@ class AddImageActivity : AppCompatActivity()  {
             chooseImageLauncher.launch(Intent.createChooser(intent, "Select Image"))
         }
 
+        chooseImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+            if(result.resultCode != RESULT_OK)
+                return@registerForActivityResult
+
+            val imageUri = result.data!!.data
+            println("Loaded: ${imageUri!!}")
+
+            // Show image
+            imageToSaveView.setImageURI(imageUri)
+            isImageLoaded = true
+            showPhotoInfo()
+        }
+
         buttonSave.setOnClickListener {
             when(type){
-                "create" -> saveImage()
-                "update" -> editImage(photoToEdit!!)
+                AddImageActivityType.create -> saveImage()
+                AddImageActivityType.update -> editImage(photoToEdit!!)
             }
         }
     }
 
     private fun saveImage(){
-        if(imageUri == null)
+        if(!isImageLoaded)
             return
 
         // Check date format from input
@@ -133,8 +141,7 @@ class AddImageActivity : AppCompatActivity()  {
             return
         }
 
-        val source = ImageDecoder.createSource(contentResolver, imageUri!!)
-        val bitmap = ImageDecoder.decodeBitmap(source)
+        val bitmap = imageToSaveView.drawable.toBitmap()
 
         val photo = Photo(
             inputName.text.toString(),
@@ -143,6 +150,29 @@ class AddImageActivity : AppCompatActivity()  {
         )
 
         finishActivity(photo)
+    }
+
+    private fun loadRandomBitmap(): Deferred<Bitmap?> {
+        return CoroutineScope(Dispatchers.IO).async {
+            try {
+                val client = OkHttpClient()
+                val request = Request.Builder()
+                    .url(randomImagesUrl)
+                    .get()
+                    .build()
+
+                val response = client.newCall(request).execute()
+
+                if (response.isSuccessful) {
+                    val bitmap = BitmapFactory.decodeStream(response.body?.byteStream())
+                    return@async bitmap
+                } else {
+                    throw IOException()
+                }
+            } catch (e: IOException) {
+                throw IOException()
+            }
+        }
     }
 
     private fun editImage(photo: Photo){
@@ -185,13 +215,37 @@ class AddImageActivity : AppCompatActivity()  {
         // Enable back arrow button
         val actionBar: ActionBar? = supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
+
+        // Enable menu
+        if(type == AddImageActivityType.create) {
+            val inflater: MenuInflater = menuInflater
+            inflater.inflate(R.menu.add_image_menu, menu)
+        }
         return true
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Close on back arrow click
         if(item.itemId == android.R.id.home){
             finish()
+        }
+        if(item.itemId == R.id.menuRandomImage){
+            CoroutineScope(Dispatchers.IO).launch{
+                try {
+                    val bitmap = loadRandomBitmap().await()
+                    runOnUiThread {
+                        imageToSaveView.setImageBitmap(bitmap)
+                        isImageLoaded = true
+                        showPhotoInfo()
+                    }
+                }
+                catch(e: IOException){
+                    runOnUiThread {
+                        Toast.makeText(this@AddImageActivity, "Не удалось загрузить случайную картинку", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
 
         return super.onOptionsItemSelected(item)
