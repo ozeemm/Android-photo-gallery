@@ -65,7 +65,6 @@ class AddImageActivity : AppCompatActivity()  {
         spinnerAdapter = AlbumSpinnerAdapter(this, android.R.layout.simple_spinner_item, albums)
         spinnerAdapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice)
         spinnerAlbumName.adapter = spinnerAdapter
-
         App.database.albumDao().getAlbums().observe(this){ list ->
             albums.clear()
             albums.addAll(list)

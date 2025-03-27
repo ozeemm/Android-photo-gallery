@@ -12,6 +12,12 @@ interface IAlbumDao {
     @Query("SELECT * FROM albums WHERE id = :id")
     fun getAlbumById(id: Long): Album
 
+    @Query("SELECT count(*) FROM photos WHERE photos.albumId == :albumId")
+    suspend fun getPhotosInAlbumCount(albumId: Long): Int
+
     @Insert
     fun insertAlbum(album: Album) : Long
+
+    @Delete
+    suspend fun deleteAlbum(album: Album)
 }

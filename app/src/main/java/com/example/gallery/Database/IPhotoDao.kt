@@ -17,5 +17,5 @@ interface IPhotoDao {
     fun updatePhoto(photo: Photo)
 
     @Delete
-    fun deletePhoto(photo: Photo)
+    suspend fun deletePhoto(photo: Photo)
 }

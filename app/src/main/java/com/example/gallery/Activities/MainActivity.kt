@@ -70,6 +70,14 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 App.database.photoDao().updatePhoto(photo)
+
+                CoroutineScope(Dispatchers.IO).launch{
+                    val jobDeleteAlbumIfEmpty = launch {
+                        val photosInAlbum = App.database.albumDao().getPhotosInAlbumCount(photo.album!!.id)
+                        if(photosInAlbum == 0)
+                            App.database.albumDao().deleteAlbum(photo.album!!)
+                    }
+                }
             }
         }
 
@@ -100,11 +108,24 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val index = viewHolder.adapterPosition
-                    val photoToDelete = photos[index]
-                    App.database.photoDao().deletePhoto(photoToDelete)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val index = viewHolder.adapterPosition
+                        val photoToDelete = photos[index]
 
-                    Toast.makeText(this@MainActivity, "Фотография удалена", Toast.LENGTH_SHORT).show()
+                        val jobDeletePhoto = launch {
+                            App.database.photoDao().deletePhoto(photoToDelete)
+                            runOnUiThread {
+                                Toast.makeText(this@MainActivity, "Фотография удалена", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        jobDeletePhoto.join()
+
+                        val jobDeleteAlbumIfEmpty = launch {
+                            val photosInAlbum = App.database.albumDao().getPhotosInAlbumCount(photoToDelete.album!!.id)
+                            if(photosInAlbum == 0)
+                                App.database.albumDao().deleteAlbum(photoToDelete.album!!)
+                        }
+                    }
                 }
             }
         )

@@ -34,7 +34,7 @@ object PicturesExporter {
         }
     }
 
-    fun exportPhoto(photo: Photo, path: File){
+    private fun exportPhoto(photo: Photo, path: File){
         if(!path.exists())
             path.createNewFile()
         try{
