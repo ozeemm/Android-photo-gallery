@@ -11,10 +11,10 @@ interface IPhotoDao {
     fun getPhotos(): LiveData<List<Photo>>
 
     @Insert
-    fun insertPhoto(photo: Photo)
+    suspend fun insertPhoto(photo: Photo)
 
     @Update
-    fun updatePhoto(photo: Photo)
+    suspend fun updatePhoto(photo: Photo)
 
     @Delete
     suspend fun deletePhoto(photo: Photo)

@@ -39,17 +39,23 @@ class MainActivity : AppCompatActivity() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
                 val photo = result.data!!.getSerializableExtra("photo", Photo::class.java)!!
-
                 val isNewAlbum = result.data!!.getBooleanExtra("is_new_album", false)
-                if(isNewAlbum){
-                    val albumName = result.data!!.getStringExtra("new_album")!!
-                    val album = Album(albumName)
 
-                    val albumId = App.database.albumDao().insertAlbum(album)
-                    photo.albumId = albumId
+                CoroutineScope(Dispatchers.IO).launch{
+                    if(isNewAlbum){
+                        launch {
+                            val albumName = result.data!!.getStringExtra("new_album")!!
+                            val album = Album(albumName)
+
+                            val albumId = App.database.albumDao().insertAlbum(album)
+                            photo.albumId = albumId
+                        }.join()
+                    }
+
+                    launch {
+                        App.database.photoDao().insertPhoto(photo)
+                    }
                 }
-
-                App.database.photoDao().insertPhoto(photo)
             }
         }
 
@@ -59,20 +65,25 @@ class MainActivity : AppCompatActivity() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val photo = result.data!!.getSerializableExtra("photo", Photo::class.java)!!
-
                 val isNewAlbum = result.data!!.getBooleanExtra("is_new_album", false)
-                if(isNewAlbum){
-                    val albumName = result.data!!.getStringExtra("new_album")!!
-                    val album = Album(albumName)
 
-                    val albumId = App.database.albumDao().insertAlbum(album)
-                    photo.albumId = albumId
-                }
+                CoroutineScope(Dispatchers.IO).launch {
+                    if(isNewAlbum) {
+                        launch {
+                            val albumName = result.data!!.getStringExtra("new_album")!!
+                            val album = Album(albumName)
 
-                App.database.photoDao().updatePhoto(photo)
+                            val albumId = App.database.albumDao().insertAlbum(album)
+                            photo.albumId = albumId
 
-                CoroutineScope(Dispatchers.IO).launch{
-                    val jobDeleteAlbumIfEmpty = launch {
+                        }.join()
+                    }
+
+                    launch {
+                        App.database.photoDao().updatePhoto(photo)
+                    }.join()
+
+                    launch {
                         val photosInAlbum = App.database.albumDao().getPhotosInAlbumCount(photo.album!!.id)
                         if(photosInAlbum == 0)
                             App.database.albumDao().deleteAlbum(photo.album!!)
@@ -92,12 +103,17 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = photoAdapter
 
         App.database.photoDao().getPhotos().observe(this){ list ->
-            photos.clear()
-            photos.addAll(list)
-            photos.forEach{ p ->
-                p.album = App.database.albumDao().getAlbumById(p.albumId)
+            CoroutineScope(Dispatchers.IO).launch {
+                photos.clear()
+                photos.addAll(list)
+                photos.forEach { p ->
+                    p.album = App.database.albumDao().getAlbumById(p.albumId)
+                }
+
+                runOnUiThread {
+                    photoAdapter.notifyDataSetChanged()
+                }
             }
-            photoAdapter.notifyDataSetChanged()
         }
 
         // Delete photos on swipe down
@@ -112,15 +128,14 @@ class MainActivity : AppCompatActivity() {
                         val index = viewHolder.adapterPosition
                         val photoToDelete = photos[index]
 
-                        val jobDeletePhoto = launch {
+                        launch {
                             App.database.photoDao().deletePhoto(photoToDelete)
                             runOnUiThread {
                                 Toast.makeText(this@MainActivity, "Фотография удалена", Toast.LENGTH_SHORT).show()
                             }
-                        }
-                        jobDeletePhoto.join()
+                        }.join()
 
-                        val jobDeleteAlbumIfEmpty = launch {
+                        launch {
                             val photosInAlbum = App.database.albumDao().getPhotosInAlbumCount(photoToDelete.album!!.id)
                             if(photosInAlbum == 0)
                                 App.database.albumDao().deleteAlbum(photoToDelete.album!!)
@@ -148,7 +163,7 @@ class MainActivity : AppCompatActivity() {
             createPhotoLauncher.launch(intent)
         }
         else if(item.itemId == R.id.menuItemExportPictures){
-            val thread = Thread {
+            Thread {
                 PicturesExporter.exportAll(photos)
                 runOnUiThread {
                     Toast.makeText(this, "Экспортировано", Toast.LENGTH_SHORT).show()
@@ -156,7 +171,7 @@ class MainActivity : AppCompatActivity() {
             }.start()
         }
         else if(item.itemId == R.id.menuItemExportPdf){
-            val thread = Thread {
+            Thread {
                 PdfExporter.export(photos)
                 runOnUiThread {
                     Toast.makeText(this, "Экспортировано в PDF", Toast.LENGTH_SHORT).show()
