@@ -162,7 +162,6 @@ class AddImageActivity : AppCompatActivity()  {
                     .build()
 
                 val response = client.newCall(request).execute()
-
                 if (response.isSuccessful) {
                     val bitmap = BitmapFactory.decodeStream(response.body?.byteStream())
                     return@async bitmap
@@ -170,7 +169,7 @@ class AddImageActivity : AppCompatActivity()  {
                     throw IOException()
                 }
             } catch (e: IOException) {
-                throw IOException()
+                throw e
             }
         }
     }

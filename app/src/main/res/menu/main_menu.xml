@@ -7,7 +7,7 @@
     <item
             android:id="@+id/menuItemExportPictures"
             android:orderInCategory="2"
-            android:title="Экспорт файлов"/>
+            android:title="Экспорт фотографий"/>
     <item
             android:id="@+id/menuItemExportPdf"
             android:orderInCategory="3"
