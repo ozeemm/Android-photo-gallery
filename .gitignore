@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+/Server/app.db
+/Server/app.db-shm
+/Server/app.db-wal
