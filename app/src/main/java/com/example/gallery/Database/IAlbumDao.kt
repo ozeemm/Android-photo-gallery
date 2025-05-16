@@ -20,4 +20,7 @@ interface IAlbumDao {
 
     @Delete
     suspend fun deleteAlbum(album: Album)
+
+    @Query("DELETE FROM albums")
+    suspend fun deleteAllAlbums()
 }

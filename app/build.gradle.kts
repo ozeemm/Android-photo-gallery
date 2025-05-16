@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.androidx.room)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.okhttp)
+    implementation(libs.gson)
     annotationProcessor (libs.androidx.room.annotation.processor)
     ksp(libs.androidx.room.annotation.processor)
     implementation(libs.androidx.room.ktx)

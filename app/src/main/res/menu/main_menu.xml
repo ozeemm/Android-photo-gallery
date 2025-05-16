@@ -7,9 +7,13 @@
     <item
             android:id="@+id/menuItemExportPictures"
             android:orderInCategory="2"
-            android:title="Экспорт фотографий"/>
+            android:title="Экспорт фотографий в хранилище"/>
     <item
             android:id="@+id/menuItemExportPdf"
             android:orderInCategory="3"
             android:title="Экспорт в PDF"/>
+    <item
+        android:id="@+id/menuItemBackup"
+        android:orderInCategory="4"
+        android:title="Резервное копирование на сервер"/>
 </menu>

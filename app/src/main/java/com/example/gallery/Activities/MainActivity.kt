@@ -178,6 +178,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }.start()
         }
+        else if(item.itemId == R.id.menuItemBackup){
+            val intent = Intent(this, BackupsActivity::class.java)
+            startActivity(intent)
+        }
 
         return super.onOptionsItemSelected(item)
     }
