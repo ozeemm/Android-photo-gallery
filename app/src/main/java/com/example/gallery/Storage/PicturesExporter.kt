@@ -14,7 +14,7 @@ object PicturesExporter {
     private val downloadsDirPath = Environment.getExternalStoragePublicDirectory(
         Environment.DIRECTORY_DOWNLOADS + "/Android-photo-gallery-export").toString()
 
-    fun exportAll(photos: ArrayList<Photo>){
+    suspend fun exportAll(photos: ArrayList<Photo>){
         val appDirPath = File(downloadsDirPath)
         if(!appDirPath.exists())
             appDirPath.mkdir()
@@ -32,6 +32,10 @@ object PicturesExporter {
             val path = File(albumDir.path, photo.name + ".png")
             exportPhoto(photo, path)
         }
+    }
+
+    suspend fun exportAll(photos: List<Photo>){
+        exportAll(ArrayList(photos))
     }
 
     private fun exportPhoto(photo: Photo, path: File){

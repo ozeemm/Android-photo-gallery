@@ -24,7 +24,7 @@ object PdfExporter {
 
     private val fileName = "Android-photo-gallery.pdf"
 
-    fun export(photos: ArrayList<Photo>){
+    suspend fun export(photos: ArrayList<Photo>){
         val pdfDir = File(fileDirPath)
         val pdfFile = File(fileDirPath, fileName)
 
@@ -65,5 +65,9 @@ object PdfExporter {
         document.close()
         pdfDocument.close()
         pdfWriter.close()
+    }
+
+    suspend fun export(photos: List<Photo>){
+        export(ArrayList(photos))
     }
 }

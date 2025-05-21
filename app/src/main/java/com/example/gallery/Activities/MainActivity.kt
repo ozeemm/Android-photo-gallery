@@ -8,19 +8,19 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.gallery.*
-import com.example.gallery.Adapters.PhotoAdapter
-import com.example.gallery.Model.Album
-import com.example.gallery.Model.Photo
-import com.example.gallery.Storage.*
 import kotlin.math.abs
 import kotlinx.coroutines.*
+import com.example.gallery.*
+import com.example.gallery.Adapters.PhotoAdapter
+import com.example.gallery.ViewModels.MainViewModel
+import com.example.gallery.Model.Photo // Не удалось удалить, так как используется в Extras
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var viewModel: MainViewModel
 
-    private var photos = ArrayList<Photo>()
     private lateinit var photoAdapter: PhotoAdapter
 
     private lateinit var gestureDetector: GestureDetector
@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         gestureDetector = GestureDetector(this, SwipeListener())
 
         createPhotoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
@@ -42,19 +43,12 @@ class MainActivity : AppCompatActivity() {
                 val isNewAlbum = result.data!!.getBooleanExtra("is_new_album", false)
 
                 CoroutineScope(Dispatchers.IO).launch{
-                    if(isNewAlbum){
-                        launch {
-                            val albumName = result.data!!.getStringExtra("new_album")!!
-                            val album = Album(albumName)
-
-                            val albumId = App.database.albumDao().insertAlbum(album)
-                            photo.albumId = albumId
-                        }.join()
+                    if(isNewAlbum) {
+                        val albumName = result.data!!.getStringExtra("new_album")!!
+                        viewModel.createPhotoInNewAlbum(photo, albumName)
                     }
-
-                    launch {
-                        App.database.photoDao().insertPhoto(photo)
-                    }
+                    else
+                        viewModel.createPhoto(photo)
                 }
             }
         }
@@ -68,33 +62,19 @@ class MainActivity : AppCompatActivity() {
                 val isNewAlbum = result.data!!.getBooleanExtra("is_new_album", false)
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    if(isNewAlbum) {
-                        launch {
-                            val albumName = result.data!!.getStringExtra("new_album")!!
-                            val album = Album(albumName)
-
-                            val albumId = App.database.albumDao().insertAlbum(album)
-                            photo.albumId = albumId
-
-                        }.join()
+                    if(isNewAlbum){
+                        val albumName = result.data!!.getStringExtra("new_album")!!
+                        viewModel.updatePhotoNewAlbum(photo, albumName)
                     }
-
-                    launch {
-                        App.database.photoDao().updatePhoto(photo)
-                    }.join()
-
-                    launch {
-                        val photosInAlbum = App.database.albumDao().getPhotosInAlbumCount(photo.album!!.id)
-                        if(photosInAlbum == 0)
-                            App.database.albumDao().deleteAlbum(photo.album!!)
-                    }
+                    else
+                        viewModel.updatePhoto(photo)
                 }
             }
         }
 
         // Fill recycle view
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        photoAdapter = PhotoAdapter(this, photos, { photo: Photo, index: Int ->
+        photoAdapter = PhotoAdapter(this, ArrayList(emptyList()), { photo: Photo, index: Int ->
             val intent = Intent(this, AddImageActivity::class.java)
             intent.putExtra("type", "update")
             intent.putExtra("photo", photo)
@@ -102,19 +82,9 @@ class MainActivity : AppCompatActivity() {
         })
         recyclerView.adapter = photoAdapter
 
-        App.database.photoDao().getPhotos().observe(this){ list ->
-            CoroutineScope(Dispatchers.IO).launch {
-                photos.clear()
-                photos.addAll(list)
-                photos.forEach { p ->
-                    p.album = App.database.albumDao().getAlbumById(p.albumId)
-                }
-
-                runOnUiThread {
-                    photoAdapter.notifyDataSetChanged()
-                }
-            }
-        }
+        viewModel.photos.observe(this, { list ->
+            photoAdapter.updateItems(list)
+        })
 
         // Delete photos on swipe down
         val itemTouchHelper = ItemTouchHelper(
@@ -126,19 +96,10 @@ class MainActivity : AppCompatActivity() {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     CoroutineScope(Dispatchers.IO).launch {
                         val index = viewHolder.adapterPosition
-                        val photoToDelete = photos[index]
+                        viewModel.deletePhoto(index)
 
-                        launch {
-                            App.database.photoDao().deletePhoto(photoToDelete)
-                            runOnUiThread {
-                                Toast.makeText(this@MainActivity, "Фотография удалена", Toast.LENGTH_SHORT).show()
-                            }
-                        }.join()
-
-                        launch {
-                            val photosInAlbum = App.database.albumDao().getPhotosInAlbumCount(photoToDelete.album!!.id)
-                            if(photosInAlbum == 0)
-                                App.database.albumDao().deleteAlbum(photoToDelete.album!!)
+                        runOnUiThread {
+                            Toast.makeText(this@MainActivity, "Фотография удалена", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -163,20 +124,22 @@ class MainActivity : AppCompatActivity() {
             createPhotoLauncher.launch(intent)
         }
         else if(item.itemId == R.id.menuItemExportPictures){
-            Thread {
-                PicturesExporter.exportAll(photos)
+            CoroutineScope(Dispatchers.IO).launch {
+                viewModel.exportPhotosStorage()
+
                 runOnUiThread {
-                    Toast.makeText(this, "Экспортировано", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Экспортировано", Toast.LENGTH_SHORT).show()
                 }
-            }.start()
+            }
         }
         else if(item.itemId == R.id.menuItemExportPdf){
-            Thread {
-                PdfExporter.export(photos)
+            CoroutineScope(Dispatchers.IO).launch {
+                viewModel.exportPhotosPdf()
+
                 runOnUiThread {
-                    Toast.makeText(this, "Экспортировано в PDF", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Экспортировано в PDF", Toast.LENGTH_SHORT).show()
                 }
-            }.start()
+            }
         }
         else if(item.itemId == R.id.menuItemBackup){
             val intent = Intent(this, BackupsActivity::class.java)

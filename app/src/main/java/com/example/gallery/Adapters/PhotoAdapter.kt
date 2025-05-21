@@ -47,6 +47,11 @@ class PhotoAdapter(): RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
         }
     }
 
+    fun updateItems(photos: ArrayList<Photo>){
+        this.photos = photos
+        notifyDataSetChanged()
+    }
+
     class PhotoViewHolder(var photoItem: View): RecyclerView.ViewHolder(photoItem) {
         val photoImage = photoItem.findViewById<ImageView>(R.id.photoImage)
         val photoAlbumName = photoItem.findViewById<TextView>(R.id.photoAlbumName)
