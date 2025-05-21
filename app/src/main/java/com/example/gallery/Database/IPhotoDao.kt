@@ -8,6 +8,9 @@ import com.example.gallery.Model.Photo
 interface IPhotoDao {
 
     @Query("SELECT * FROM photos")
+    fun fetchPhotos(): List<Photo>
+
+    @Query("SELECT * FROM photos")
     fun getPhotos(): LiveData<List<Photo>>
 
     @Insert

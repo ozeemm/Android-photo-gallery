@@ -42,6 +42,11 @@ class BackupAdapter() : RecyclerView.Adapter<BackupAdapter.BackupViewHolder>() {
         return backups.size
     }
 
+    fun updateItems(backups: ArrayList<Backup>){
+        this.backups = backups
+        notifyDataSetChanged()
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(viewHolder: BackupViewHolder, position: Int) {
         val backup = backups[position]
