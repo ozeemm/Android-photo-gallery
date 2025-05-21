@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Gallery</string>
+
+    <string name="MainActivity_PhotoDeleted">Фотография удалена</string>
+    <string name="MainActivity_ExportedInStorage">Экспортировано в хранилище (Downloads)</string>
+    <string name="MainActivity_ExportedInPdf">Экспортировано в PDF (Documents)</string>
+
+    <string name="AddImageActivity_PhotoCreated">Фотография создана</string>
+    <string name="AddImageActivity_PhotoUpdated">Фотография изменена</string>
+    <string name="AddImageActivity_WrongDateFormat">Неверный формат даты</string>
+    <string name="AddImageActivity_UnableToLoadRandomPhoto">Не удалось загрузить случайную картинку</string>
+
+    <string name="BackupsActivity_BackupCreated">Резервная копия создана</string>
+    <string name="BackupsActivity_BackupDownloaded">Резервная копия загружена</string>
+    <string name="BackupsActivity_BackupDeleted">Резервная копия удалена</string>
 </resources>

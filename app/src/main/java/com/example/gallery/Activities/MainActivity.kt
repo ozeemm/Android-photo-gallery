@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                         viewModel.deletePhoto(index)
 
                         runOnUiThread {
-                            Toast.makeText(this@MainActivity, "Фотография удалена", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@MainActivity, getText(R.string.MainActivity_PhotoDeleted), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                     viewModel.exportPhotosStorage()
 
                     runOnUiThread {
-                        Toast.makeText(this@MainActivity, "Экспортировано", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, R.string.MainActivity_ExportedInStorage, Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
                     viewModel.exportPhotosPdf()
 
                     runOnUiThread {
-                        Toast.makeText(this@MainActivity, "Экспортировано в PDF", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, R.string.MainActivity_ExportedInPdf, Toast.LENGTH_SHORT).show()
                     }
                 }
             }

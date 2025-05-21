@@ -41,7 +41,7 @@ class BackupsActivity : AppCompatActivity() {
                 viewModel.createBackup()
 
                 runOnUiThread {
-                    Toast.makeText(this@BackupsActivity, "Резервная копия создана", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@BackupsActivity, getText(R.string.BackupsActivity_BackupCreated), Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -54,7 +54,7 @@ class BackupsActivity : AppCompatActivity() {
                 viewModel.downloadBackup(backup)
 
                 runOnUiThread {
-                    Toast.makeText(this@BackupsActivity, "Резервная копия загружена", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@BackupsActivity, getText(R.string.BackupsActivity_BackupDownloaded), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -64,7 +64,7 @@ class BackupsActivity : AppCompatActivity() {
                 viewModel.deleteBackup(backup)
 
                 runOnUiThread {
-                    Toast.makeText(this@BackupsActivity, "Резервная копия удалена", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@BackupsActivity, getText(R.string.BackupsActivity_BackupDeleted), Toast.LENGTH_SHORT).show()
                 }
             }
         }

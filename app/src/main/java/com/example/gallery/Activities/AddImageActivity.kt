@@ -137,9 +137,9 @@ class AddImageActivity : AppCompatActivity()  {
 
                     runOnUiThread {
                         if(type == AddImageActivityType.Create)
-                            Toast.makeText(this@AddImageActivity, "Фотография создана", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@AddImageActivity, getString(R.string.AddImageActivity_PhotoCreated), Toast.LENGTH_SHORT).show()
                         else if(type == AddImageActivityType.Update)
-                            Toast.makeText(this@AddImageActivity, "Фотография изменена", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@AddImageActivity, getString(R.string.AddImageActivity_PhotoUpdated), Toast.LENGTH_SHORT).show()
 
                         setResult(Activity.RESULT_OK)
                         finish()
@@ -148,7 +148,7 @@ class AddImageActivity : AppCompatActivity()  {
                 catch(e: Exception){
                     if(e.message != null && e.message == "Wrong date format"){
                         runOnUiThread{
-                            Toast.makeText(this@AddImageActivity, "Неверный формат даты", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@AddImageActivity, getString(R.string.AddImageActivity_WrongDateFormat), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -187,7 +187,7 @@ class AddImageActivity : AppCompatActivity()  {
                 }
                 catch(e: IOException){
                     runOnUiThread {
-                        Toast.makeText(this@AddImageActivity, "Не удалось загрузить случайную картинку", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@AddImageActivity, getText(R.string.AddImageActivity_UnableToLoadRandomPhoto), Toast.LENGTH_SHORT).show()
                     }
                 }
             }
