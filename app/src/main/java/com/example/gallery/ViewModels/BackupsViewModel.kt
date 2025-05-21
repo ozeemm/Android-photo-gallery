@@ -65,17 +65,17 @@ class BackupsViewModel: ViewModel() {
             }.await()
 
             CoroutineScope(Dispatchers.Main).launch {
-                _backups.value = ArrayList<Backup>(gson.fromJson(json, Array<Backup>::class.java).toList())
+                _backups.value = ArrayList(gson.fromJson(json, Array<Backup>::class.java).toList())
             }
         }
     }
 
     // Создание нового бэкапа
 
-    public suspend fun createBackup(){
+    suspend fun createBackup(){
         val json = createBackupJson().await()
 
-        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull();
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = json.toRequestBody(mediaType)
 
         val client = OkHttpClient()
@@ -121,7 +121,7 @@ class BackupsViewModel: ViewModel() {
 
     // Удаление бэкапа
 
-    public suspend fun deleteBackup(backup: Backup){
+    suspend fun deleteBackup(backup: Backup){
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("$apiUrl/backups/${backup.id}")
@@ -137,7 +137,7 @@ class BackupsViewModel: ViewModel() {
 
     // Скачать и использовать бэкап
 
-    public suspend fun downloadBackup(backup: Backup){
+    suspend fun downloadBackup(backup: Backup){
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("$apiUrl/backups/${backup.id}")

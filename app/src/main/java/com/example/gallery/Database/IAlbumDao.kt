@@ -9,23 +9,14 @@ interface IAlbumDao {
     @Query("SELECT * FROM albums")
     suspend fun fetchAlbums(): List<Album>
 
-    @Query("SELECT * FROM albums")
-    fun getAlbums(): LiveData<List<Album>>
-
     @Query("SELECT * FROM albums WHERE id = :id")
     suspend fun getAlbumById(id: Long): Album
 
     @Query("SELECT * FROM albums WHERE name == :name")
     suspend fun getAlbumByName(name: String): Album
 
-    @Query("SELECT count(*) FROM photos WHERE photos.albumId == :albumId")
-    suspend fun getPhotosInAlbumCount(albumId: Long): Int
-
     @Insert
     suspend fun insertAlbum(album: Album) : Long
-
-    @Delete
-    suspend fun deleteAlbum(album: Album)
 
     @Query("DELETE FROM albums")
     suspend fun deleteAllAlbums()

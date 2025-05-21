@@ -1,7 +1,6 @@
 package com.example.gallery.Adapters
 
 import android.content.Context
-import android.icu.text.SimpleDateFormat
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -12,10 +11,6 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gallery.Model.Backup
 import com.example.gallery.R
-import org.w3c.dom.Text
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 import kotlin.collections.ArrayList
 
 class BackupAdapter() : RecyclerView.Adapter<BackupAdapter.BackupViewHolder>() {
@@ -43,7 +38,8 @@ class BackupAdapter() : RecyclerView.Adapter<BackupAdapter.BackupViewHolder>() {
     }
 
     fun updateItems(backups: ArrayList<Backup>){
-        this.backups = backups
+        this.backups.clear()
+        this.backups.addAll(backups)
         notifyDataSetChanged()
     }
 
@@ -63,12 +59,12 @@ class BackupAdapter() : RecyclerView.Adapter<BackupAdapter.BackupViewHolder>() {
         }
     }
 
-    class BackupViewHolder(var backupItem: View) : RecyclerView.ViewHolder(backupItem){
-        val dateText = backupItem.findViewById<TextView>(R.id.backupDateTextView)
-        val albumsCountText = backupItem.findViewById<TextView>(R.id.albumsCountTextView)
-        val photosCountText = backupItem.findViewById<TextView>(R.id.photosCountTextView)
-        val loadButton = backupItem.findViewById<Button>(R.id.loadButton)
-        val deleteButton = backupItem.findViewById<Button>(R.id.deleteButton)
+    class BackupViewHolder(private var backupItem: View) : RecyclerView.ViewHolder(backupItem){
+        val dateText: TextView = backupItem.findViewById(R.id.backupDateTextView)
+        val albumsCountText: TextView = backupItem.findViewById(R.id.albumsCountTextView)
+        val photosCountText: TextView = backupItem.findViewById(R.id.photosCountTextView)
+        val loadButton: Button = backupItem.findViewById(R.id.loadButton)
+        val deleteButton: Button = backupItem.findViewById(R.id.deleteButton)
     }
 
     interface BackupButtonsListener{

@@ -5,5 +5,4 @@ data class Backup(
     var date: String,
     var albumsCount: Int,
     var photosCount: Int
-) {
-}
+)

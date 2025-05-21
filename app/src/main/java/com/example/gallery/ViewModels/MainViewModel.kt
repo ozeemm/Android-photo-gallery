@@ -39,15 +39,15 @@ class MainViewModel: ViewModel() {
         App.database.photoDao().getPhotos().removeObserver(photosObserver)
     }
 
-    public suspend fun exportPhotosStorage(){
+    suspend fun exportPhotosStorage(){
         PicturesExporter.exportAll(_photos.value!!)
     }
 
-    public suspend fun exportPhotosPdf(){
+    suspend fun exportPhotosPdf(){
         PdfExporter.export(_photos.value!!)
     }
 
-    public suspend fun deletePhoto(index: Int){
+    suspend fun deletePhoto(index: Int){
         val photo = _photos.value!![index]
 
         App.database.photoDao().deletePhoto(photo)

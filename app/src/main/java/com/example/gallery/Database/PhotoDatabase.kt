@@ -11,7 +11,7 @@ import com.example.gallery.Model.*
 abstract class PhotoDatabase: RoomDatabase() {
 
     companion object{
-        val name = "gallery_database"
+        const val name = "gallery_database"
     }
 
     abstract fun photoDao(): IPhotoDao

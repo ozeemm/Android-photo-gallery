@@ -29,17 +29,17 @@ class MainActivity : AppCompatActivity() {
 
         // Fill recycle view
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        photoAdapter = PhotoAdapter(this, ArrayList(emptyList()), { photo: Photo, index: Int ->
+        photoAdapter = PhotoAdapter(this, ArrayList(emptyList())) { photo: Photo ->
             val intent = Intent(this, AddImageActivity::class.java)
-            intent.putExtra("type", "update")
+            intent.putExtra("type", "Update")
             intent.putExtra("photo.id", photo.id)
             startActivity(intent)
-        })
+        }
         recyclerView.adapter = photoAdapter
 
-        viewModel.photos.observe(this, { list ->
+        viewModel.photos.observe(this) { list ->
             photoAdapter.updateItems(list)
-        })
+        }
 
         // Delete photos on swipe down
         val itemTouchHelper = ItemTouchHelper(
@@ -73,32 +73,34 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Open activity from menu
-        if(item.itemId == R.id.menuItemAdd){
-            val intent = Intent(this, AddImageActivity::class.java)
-            intent.putExtra("type", "create")
-            startActivity(intent)
-        }
-        else if(item.itemId == R.id.menuItemExportPictures){
-            CoroutineScope(Dispatchers.IO).launch {
-                viewModel.exportPhotosStorage()
+        when (item.itemId) {
+            R.id.menuItemAdd -> {
+                val intent = Intent(this, AddImageActivity::class.java)
+                intent.putExtra("type", "Create")
+                startActivity(intent)
+            }
+            R.id.menuItemExportPictures -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    viewModel.exportPhotosStorage()
 
-                runOnUiThread {
-                    Toast.makeText(this@MainActivity, "Экспортировано", Toast.LENGTH_SHORT).show()
+                    runOnUiThread {
+                        Toast.makeText(this@MainActivity, "Экспортировано", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
-        }
-        else if(item.itemId == R.id.menuItemExportPdf){
-            CoroutineScope(Dispatchers.IO).launch {
-                viewModel.exportPhotosPdf()
+            R.id.menuItemExportPdf -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    viewModel.exportPhotosPdf()
 
-                runOnUiThread {
-                    Toast.makeText(this@MainActivity, "Экспортировано в PDF", Toast.LENGTH_SHORT).show()
+                    runOnUiThread {
+                        Toast.makeText(this@MainActivity, "Экспортировано в PDF", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
-        }
-        else if(item.itemId == R.id.menuItemBackup){
-            val intent = Intent(this, BackupsActivity::class.java)
-            startActivity(intent)
+            R.id.menuItemBackup -> {
+                val intent = Intent(this, BackupsActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         return super.onOptionsItemSelected(item)
@@ -110,7 +112,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onSwipeUp(){
         val intent = Intent(this, AddImageActivity::class.java)
-        intent.putExtra("type", "create")
+        intent.putExtra("type", "Create")
         startActivity(intent)
     }
 

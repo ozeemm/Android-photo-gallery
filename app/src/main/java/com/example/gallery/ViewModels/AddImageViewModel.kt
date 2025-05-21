@@ -1,29 +1,24 @@
 package com.example.gallery.ViewModels
 
-import android.graphics.BitmapFactory
 import android.icu.text.SimpleDateFormat
 import androidx.lifecycle.ViewModel
 import com.example.gallery.App
 import com.example.gallery.Model.Album
-
-import com.example.gallery.Model.Photo
-import com.example.gallery.Utils.BitmapConverter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
+import com.example.gallery.Model.Photo
+import com.example.gallery.Utils.BitmapConverter
 
 class AddImageViewModel : ViewModel() {
     private val randomImagesUrl = "https://picsum.photos/800/600"
 
-    public val defaultPhotoName: String
+    val defaultPhotoName: String
         get() = "Image_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(Date())}"
 
-    public val currentDateString: String
+    val currentDateString: String
         get() = SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.ENGLISH).format(Date())
 
     suspend fun getAlbumsNames(): ArrayList<String>{
@@ -42,7 +37,7 @@ class AddImageViewModel : ViewModel() {
         }
 
         val photo = Photo(name, date, image)
-        photo!!.albumId = getAlbumId(album, isNewAlbum)
+        photo.albumId = getAlbumId(album, isNewAlbum)
 
         App.database.photoDao().insertPhoto(photo)
     }
@@ -81,10 +76,10 @@ class AddImageViewModel : ViewModel() {
     }
 
     private suspend fun getAlbumId(album: String, isNewAlbum: Boolean): Long{
-        if(isNewAlbum)
-            return App.database.albumDao().insertAlbum(Album(album))
+        return if(isNewAlbum)
+            App.database.albumDao().insertAlbum(Album(album))
         else
-            return App.database.albumDao().getAlbumByName(album).id
+            App.database.albumDao().getAlbumByName(album).id
     }
 
     private fun isDateStringCorrect(dateString: String): Boolean{

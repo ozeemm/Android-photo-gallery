@@ -30,9 +30,9 @@ class BackupsActivity : AppCompatActivity() {
         backupAdapter = BackupAdapter(this, ArrayList(emptyList<Backup>()), BackupButtonsListener())
         recyclerView.adapter = backupAdapter
 
-        viewModel.backups.observe(this, { backups ->
+        viewModel.backups.observe(this) { backups ->
             backupAdapter.updateItems(backups)
-        })
+        }
 
         // Create backup button
         val createBackupButton = findViewById<Button>(R.id.createBackupButton)

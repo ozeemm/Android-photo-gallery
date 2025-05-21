@@ -71,7 +71,7 @@ class AddImageActivity : AppCompatActivity()  {
                 spinnerAdapter.updateItems(albumNames)
             }
 
-            if (type == AddImageActivityType.update) {
+            if (type == AddImageActivityType.Update) {
                 val photoId = intent.getLongExtra("photo.id", 0)
                 val photoDataList = viewModel.getPhotoById(photoId)
 
@@ -96,7 +96,7 @@ class AddImageActivity : AppCompatActivity()  {
         }
 
         imageToSaveView.setOnClickListener {
-            if(type != AddImageActivityType.create)
+            if(type != AddImageActivityType.Create)
                 return@setOnClickListener
 
             // Load image on activity
@@ -122,23 +122,23 @@ class AddImageActivity : AppCompatActivity()  {
         buttonSave.setOnClickListener {
             val name = inputName.text.toString()
             val date = inputDate.text.toString()
-            val image_string = BitmapConverter.bitmapToString(imageToSaveView.drawable.toBitmap())
+            val imageString = BitmapConverter.bitmapToString(imageToSaveView.drawable.toBitmap())
             val isNewAlbum = newAlbumCheckbox.isChecked
             val album = if(isNewAlbum) inputAlbumName.text.toString() else spinnerAlbumName.selectedItem as String
 
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    if (type == AddImageActivityType.create) { // Save
-                        viewModel.savePhoto(name, date, image_string, album, isNewAlbum)
-                    } else if (type == AddImageActivityType.update) { // Update
+                    if (type == AddImageActivityType.Create) { // Save
+                        viewModel.savePhoto(name, date, imageString, album, isNewAlbum)
+                    } else if (type == AddImageActivityType.Update) { // Update
                         val id = intent.getLongExtra("photo.id", 0)
-                        viewModel.updatePhoto(id, name, date, image_string, album, isNewAlbum)
+                        viewModel.updatePhoto(id, name, date, imageString, album, isNewAlbum)
                     }
 
                     runOnUiThread {
-                        if(type == AddImageActivityType.create)
+                        if(type == AddImageActivityType.Create)
                             Toast.makeText(this@AddImageActivity, "Фотография создана", Toast.LENGTH_SHORT).show()
-                        else if(type == AddImageActivityType.update)
+                        else if(type == AddImageActivityType.Update)
                             Toast.makeText(this@AddImageActivity, "Фотография изменена", Toast.LENGTH_SHORT).show()
 
                         setResult(Activity.RESULT_OK)
@@ -162,7 +162,7 @@ class AddImageActivity : AppCompatActivity()  {
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Enable menu
-        if(type == AddImageActivityType.create) {
+        if(type == AddImageActivityType.Create) {
             val inflater: MenuInflater = menuInflater
             inflater.inflate(R.menu.add_image_menu, menu)
         }
@@ -197,6 +197,6 @@ class AddImageActivity : AppCompatActivity()  {
     }
 
     enum class AddImageActivityType{
-        create, update
+        Create, Update
     }
 }

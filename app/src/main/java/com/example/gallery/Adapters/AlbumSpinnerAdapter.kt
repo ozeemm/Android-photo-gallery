@@ -9,9 +9,9 @@ import android.widget.CheckedTextView
 import android.widget.TextView
 
 class AlbumSpinnerAdapter(
-    var ctx: Context,
-    var resource: Int,
-    var albums: ArrayList<String>
+    private var ctx: Context,
+    private var resource: Int,
+    private var albums: ArrayList<String>
 ) : ArrayAdapter<String>(ctx, resource, albums) {
 
     private var layoutInflater: LayoutInflater = LayoutInflater.from(ctx)

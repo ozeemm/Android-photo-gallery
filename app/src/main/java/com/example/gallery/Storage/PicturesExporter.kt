@@ -3,7 +3,6 @@ package com.example.gallery.Storage
 import android.graphics.Bitmap
 import android.icu.text.SimpleDateFormat
 import android.os.Environment
-import com.example.gallery.App
 import com.example.gallery.Model.Photo
 import java.io.File
 import java.io.FileOutputStream
@@ -32,10 +31,6 @@ object PicturesExporter {
             val path = File(albumDir.path, photo.name + ".png")
             exportPhoto(photo, path)
         }
-    }
-
-    suspend fun exportAll(photos: List<Photo>){
-        exportAll(ArrayList(photos))
     }
 
     private fun exportPhoto(photo: Photo, path: File){
