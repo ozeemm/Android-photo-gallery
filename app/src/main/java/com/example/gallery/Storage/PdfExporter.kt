@@ -2,7 +2,6 @@ package com.example.gallery.Storage
 
 import android.graphics.Bitmap
 import android.os.Environment
-import com.example.gallery.App
 import com.example.gallery.Model.Photo
 import com.itextpdf.io.font.constants.StandardFonts
 import com.itextpdf.io.image.ImageDataFactory
@@ -22,9 +21,9 @@ object PdfExporter {
     private val fileDirPath = Environment.getExternalStoragePublicDirectory(
         Environment.DIRECTORY_DOCUMENTS + "/Android-photo-gallery").toString()
 
-    private val fileName = "Android-photo-gallery.pdf"
+    private const val fileName = "Android-photo-gallery.pdf"
 
-    fun export(photos: ArrayList<Photo>){
+    suspend fun export(photos: ArrayList<Photo>){
         val pdfDir = File(fileDirPath)
         val pdfFile = File(fileDirPath, fileName)
 

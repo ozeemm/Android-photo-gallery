@@ -2,9 +2,6 @@ package com.example.gallery.Activities
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -21,21 +18,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
-import com.example.gallery.Adapters.AlbumSpinnerAdapter
-import com.example.gallery.App
-import com.example.gallery.Enums.AddImageActivityType
-import com.example.gallery.Model.Album
-import com.example.gallery.Model.Photo
-import com.example.gallery.R
-import com.example.gallery.Utils.BitmapConverter
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.*
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.io.IOException
-import java.util.*
 import kotlin.collections.ArrayList
 
+import com.example.gallery.Adapters.AlbumSpinnerAdapter
+import com.example.gallery.R
+import com.example.gallery.Utils.BitmapConverter
+import com.example.gallery.ViewModels.AddImageViewModel
+
 class AddImageActivity : AppCompatActivity()  {
+
+    private lateinit var viewModel: AddImageViewModel
 
     private lateinit var imageToSaveView: ImageView
     private lateinit var buttonSave: Button
@@ -46,19 +41,14 @@ class AddImageActivity : AppCompatActivity()  {
     private lateinit var newAlbumCheckbox: CheckBox
     private lateinit var spinnerAdapter: AlbumSpinnerAdapter
 
-    private val albums = ArrayList<Album>()
-
     private lateinit var type: AddImageActivityType
-    private var isImageLoaded = false
-    private var photoToEdit: Photo? = null
 
     private lateinit var chooseImageLauncher: ActivityResultLauncher<Intent>
-
-    private val randomImagesUrl = "https://picsum.photos/800/600"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_image)
+        viewModel = ViewModelProvider(this).get(AddImageViewModel::class.java)
 
         imageToSaveView = findViewById(R.id.imageToSaveView)
         buttonSave = findViewById(R.id.buttonSave)
@@ -68,24 +58,30 @@ class AddImageActivity : AppCompatActivity()  {
         spinnerAlbumName = findViewById(R.id.spinnerAlbumName)
         newAlbumCheckbox = findViewById(R.id.newAlbumNameCheckBox)
 
-        spinnerAdapter = AlbumSpinnerAdapter(this, android.R.layout.simple_spinner_item, albums)
+        spinnerAdapter = AlbumSpinnerAdapter(this, android.R.layout.simple_spinner_item, ArrayList(emptyList()))
         spinnerAdapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice)
         spinnerAlbumName.adapter = spinnerAdapter
-        App.database.albumDao().getAlbums().observe(this){ list ->
-            albums.clear()
-            albums.addAll(list)
-            spinnerAdapter.notifyDataSetChanged()
-
-            if(type == AddImageActivityType.update) {
-                showPhotoInfo(photoToEdit!!) // FIX
-            }
-        }
 
         type = AddImageActivityType.valueOf(intent.getStringExtra("type")!!)
-        if(type == AddImageActivityType.update) {
-            photoToEdit = intent.getSerializableExtra("photo", Photo::class.java)!!
-            isImageLoaded = true
-            showPhotoInfo(photoToEdit!!)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val albumNames = viewModel.getAlbumsNames()
+
+            runOnUiThread{
+                spinnerAdapter.updateItems(albumNames)
+            }
+
+            if (type == AddImageActivityType.Update) {
+                val photoId = intent.getLongExtra("photo.id", 0)
+                val photoDataList = viewModel.getPhotoById(photoId)
+
+                runOnUiThread {
+                    imageToSaveView.setImageBitmap(BitmapConverter.stringToBitmap(photoDataList[0]))
+                    inputName.setText(photoDataList[1])
+                    spinnerAlbumName.setSelection(spinnerAdapter.getPosition(photoDataList[2]))
+                    inputDate.setText(photoDataList[3])
+                }
+            }
         }
 
         newAlbumCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -100,7 +96,7 @@ class AddImageActivity : AppCompatActivity()  {
         }
 
         imageToSaveView.setOnClickListener {
-            if(type != AddImageActivityType.create)
+            if(type != AddImageActivityType.Create)
                 return@setOnClickListener
 
             // Load image on activity
@@ -115,98 +111,48 @@ class AddImageActivity : AppCompatActivity()  {
                 return@registerForActivityResult
 
             val imageUri = result.data!!.data
-            println("Loaded: ${imageUri!!}")
 
             // Show image
             imageToSaveView.setImageURI(imageUri)
-            isImageLoaded = true
-            showPhotoInfo()
+
+            inputName.setText(viewModel.defaultPhotoName)
+            inputDate.setText(viewModel.currentDateString)
         }
 
         buttonSave.setOnClickListener {
-            when(type){
-                AddImageActivityType.create -> saveImage()
-                AddImageActivityType.update -> editImage(photoToEdit!!)
-            }
-        }
-    }
+            val name = inputName.text.toString()
+            val date = inputDate.text.toString()
+            val imageString = BitmapConverter.bitmapToString(imageToSaveView.drawable.toBitmap())
+            val isNewAlbum = newAlbumCheckbox.isChecked
+            val album = if(isNewAlbum) inputAlbumName.text.toString() else spinnerAlbumName.selectedItem as String
 
-    private fun saveImage(){
-        if(!isImageLoaded)
-            return
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    if (type == AddImageActivityType.Create) { // Save
+                        viewModel.savePhoto(name, date, imageString, album, isNewAlbum)
+                    } else if (type == AddImageActivityType.Update) { // Update
+                        val id = intent.getLongExtra("photo.id", 0)
+                        viewModel.updatePhoto(id, name, date, imageString, album, isNewAlbum)
+                    }
 
-        // Check date format from input
-        if(!isDateStringCorrect(inputDate.text.toString())) {
-            Toast.makeText(this, "Неверный формат даты", Toast.LENGTH_SHORT).show()
-            return
-        }
+                    runOnUiThread {
+                        if(type == AddImageActivityType.Create)
+                            Toast.makeText(this@AddImageActivity, getString(R.string.AddImageActivity_PhotoCreated), Toast.LENGTH_SHORT).show()
+                        else if(type == AddImageActivityType.Update)
+                            Toast.makeText(this@AddImageActivity, getString(R.string.AddImageActivity_PhotoUpdated), Toast.LENGTH_SHORT).show()
 
-        val bitmap = imageToSaveView.drawable.toBitmap()
-
-        val photo = Photo(
-            inputName.text.toString(),
-            inputDate.text.toString(),
-            BitmapConverter.bitmapToString(bitmap)
-        )
-
-        finishActivity(photo)
-    }
-
-    private fun loadRandomBitmap(): Deferred<Bitmap?> {
-        return CoroutineScope(Dispatchers.IO).async {
-            try {
-                val client = OkHttpClient()
-                val request = Request.Builder()
-                    .url(randomImagesUrl)
-                    .get()
-                    .build()
-
-                val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    val bitmap = BitmapFactory.decodeStream(response.body?.byteStream())
-                    return@async bitmap
-                } else {
-                    throw IOException()
+                        setResult(Activity.RESULT_OK)
+                        finish()
+                    }
                 }
-            } catch (e: IOException) {
-                throw e
+                catch(e: Exception){
+                    if(e.message != null && e.message == "Wrong date format"){
+                        runOnUiThread{
+                            Toast.makeText(this@AddImageActivity, getString(R.string.AddImageActivity_WrongDateFormat), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
-        }
-    }
-
-    private fun editImage(photo: Photo){
-        if(!isDateStringCorrect(inputDate.text.toString())) {
-            Toast.makeText(this, "Неверный формат даты", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        photo.name = inputName.text.toString()
-        photo.date = inputDate.text.toString()
-
-        Toast.makeText(this, "Фотография изменена", Toast.LENGTH_SHORT).show()
-        finishActivity(photo)
-    }
-
-    private fun finishActivity(photo: Photo){
-        val data = Intent()
-        data.putExtra("photo", photo)
-
-        if(newAlbumCheckbox.isChecked){
-            data.putExtra("is_new_album", true)
-            data.putExtra("new_album", inputAlbumName.text.toString())
-        } else{
-            data.putExtra("is_new_album", false)
-            val selectedAlbum: Album = spinnerAlbumName.selectedItem as Album
-            photo.albumId = selectedAlbum.id
-        }
-
-        try {
-            setResult(Activity.RESULT_OK, data)
-            finish()
-        } catch(e: Exception){
-            Toast.makeText(this, "Ошибка: фотография слишком большая", Toast.LENGTH_SHORT).show()
-            setResult(Activity.RESULT_CANCELED)
-            finish()
         }
     }
 
@@ -216,7 +162,7 @@ class AddImageActivity : AppCompatActivity()  {
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Enable menu
-        if(type == AddImageActivityType.create) {
+        if(type == AddImageActivityType.Create) {
             val inflater: MenuInflater = menuInflater
             inflater.inflate(R.menu.add_image_menu, menu)
         }
@@ -232,16 +178,16 @@ class AddImageActivity : AppCompatActivity()  {
         if(item.itemId == R.id.menuRandomImage){
             CoroutineScope(Dispatchers.IO).launch{
                 try {
-                    val bitmap = loadRandomBitmap().await()
+                    val bitmap = BitmapConverter.stringToBitmap(viewModel.getRandomImageString())
                     runOnUiThread {
                         imageToSaveView.setImageBitmap(bitmap)
-                        isImageLoaded = true
-                        showPhotoInfo()
+                        inputName.setText(viewModel.defaultPhotoName)
+                        inputDate.setText(viewModel.currentDateString)
                     }
                 }
                 catch(e: IOException){
                     runOnUiThread {
-                        Toast.makeText(this@AddImageActivity, "Не удалось загрузить случайную картинку", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@AddImageActivity, getText(R.string.AddImageActivity_UnableToLoadRandomPhoto), Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -250,34 +196,7 @@ class AddImageActivity : AppCompatActivity()  {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun showPhotoInfo(){
-        inputName.setText(getDefaultPhotoName())
-        inputDate.setText(getCurrentDateString())
-    }
-
-    private fun showPhotoInfo(photo: Photo){
-        imageToSaveView.setImageBitmap(photo.bitmap)
-        inputName.setText(photo.name)
-        spinnerAlbumName.setSelection(spinnerAdapter.getPosition(photo.album!!))
-        inputDate.setText(photo.date)
-    }
-
-    private fun getDefaultPhotoName(): String{
-        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(Date())
-        return "Image_${timestamp}"
-    }
-
-    private fun getCurrentDateString(): String{
-        return SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.ENGLISH).format(Date())
-    }
-
-    private fun isDateStringCorrect(dateString: String): Boolean{
-        val pattern = SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.ENGLISH)
-        try {
-            pattern.parse(dateString)
-            return true
-        } catch(e: Exception){
-            return false
-        }
+    enum class AddImageActivityType{
+        Create, Update
     }
 }

@@ -3,7 +3,6 @@ package com.example.gallery.Storage
 import android.graphics.Bitmap
 import android.icu.text.SimpleDateFormat
 import android.os.Environment
-import com.example.gallery.App
 import com.example.gallery.Model.Photo
 import java.io.File
 import java.io.FileOutputStream
@@ -14,7 +13,7 @@ object PicturesExporter {
     private val downloadsDirPath = Environment.getExternalStoragePublicDirectory(
         Environment.DIRECTORY_DOWNLOADS + "/Android-photo-gallery-export").toString()
 
-    fun exportAll(photos: ArrayList<Photo>){
+    suspend fun exportAll(photos: ArrayList<Photo>){
         val appDirPath = File(downloadsDirPath)
         if(!appDirPath.exists())
             appDirPath.mkdir()

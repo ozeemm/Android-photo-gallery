@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import java.io.ByteArrayOutputStream
+import java.io.InputStream
 
 object BitmapConverter {
 
@@ -25,4 +26,11 @@ object BitmapConverter {
         }
     }
 
+    fun inputStreamToBitmap(stream: InputStream): Bitmap{
+        return BitmapFactory.decodeStream(stream)
+    }
+
+    fun inputStreamToString(stream: InputStream): String{
+        return bitmapToString(inputStreamToBitmap(stream))
+    }
 }
