@@ -1,32 +1,25 @@
 package com.example.gallery.Activities
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 import kotlinx.coroutines.*
-import com.example.gallery.*
+
+import com.example.gallery.R
 import com.example.gallery.Adapters.PhotoAdapter
 import com.example.gallery.ViewModels.MainViewModel
 import com.example.gallery.Model.Photo // Не удалось удалить, так как используется в Extras
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
-
     private lateinit var photoAdapter: PhotoAdapter
-
     private lateinit var gestureDetector: GestureDetector
-
-    private lateinit var createPhotoLauncher: ActivityResultLauncher<Intent>
-    private lateinit var updatePhotoLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,51 +27,13 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         gestureDetector = GestureDetector(this, SwipeListener())
 
-        createPhotoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
-            if(result.resultCode != RESULT_OK)
-                return@registerForActivityResult
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-                val photo = result.data!!.getSerializableExtra("photo", Photo::class.java)!!
-                val isNewAlbum = result.data!!.getBooleanExtra("is_new_album", false)
-
-                CoroutineScope(Dispatchers.IO).launch{
-                    if(isNewAlbum) {
-                        val albumName = result.data!!.getStringExtra("new_album")!!
-                        viewModel.createPhotoInNewAlbum(photo, albumName)
-                    }
-                    else
-                        viewModel.createPhoto(photo)
-                }
-            }
-        }
-
-        updatePhotoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
-            if(result.resultCode != RESULT_OK)
-                return@registerForActivityResult
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                val photo = result.data!!.getSerializableExtra("photo", Photo::class.java)!!
-                val isNewAlbum = result.data!!.getBooleanExtra("is_new_album", false)
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    if(isNewAlbum){
-                        val albumName = result.data!!.getStringExtra("new_album")!!
-                        viewModel.updatePhotoNewAlbum(photo, albumName)
-                    }
-                    else
-                        viewModel.updatePhoto(photo)
-                }
-            }
-        }
-
         // Fill recycle view
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         photoAdapter = PhotoAdapter(this, ArrayList(emptyList()), { photo: Photo, index: Int ->
             val intent = Intent(this, AddImageActivity::class.java)
             intent.putExtra("type", "update")
-            intent.putExtra("photo", photo)
-            updatePhotoLauncher.launch(intent)
+            intent.putExtra("photo.id", photo.id)
+            startActivity(intent)
         })
         recyclerView.adapter = photoAdapter
 
@@ -121,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         if(item.itemId == R.id.menuItemAdd){
             val intent = Intent(this, AddImageActivity::class.java)
             intent.putExtra("type", "create")
-            createPhotoLauncher.launch(intent)
+            startActivity(intent)
         }
         else if(item.itemId == R.id.menuItemExportPictures){
             CoroutineScope(Dispatchers.IO).launch {
@@ -156,7 +111,7 @@ class MainActivity : AppCompatActivity() {
     private fun onSwipeUp(){
         val intent = Intent(this, AddImageActivity::class.java)
         intent.putExtra("type", "create")
-        createPhotoLauncher.launch(intent)
+        startActivity(intent)
     }
 
     inner class SwipeListener: GestureDetector.SimpleOnGestureListener(){

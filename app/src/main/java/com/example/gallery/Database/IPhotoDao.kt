@@ -13,6 +13,9 @@ interface IPhotoDao {
     @Query("SELECT * FROM photos")
     fun getPhotos(): LiveData<List<Photo>>
 
+    @Query("SELECT * FROM photos WHERE id=:id")
+    fun getPhoto(id: Long): Photo
+
     @Insert
     suspend fun insertPhoto(photo: Photo)
 

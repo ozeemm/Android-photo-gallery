@@ -15,6 +15,9 @@ interface IAlbumDao {
     @Query("SELECT * FROM albums WHERE id = :id")
     suspend fun getAlbumById(id: Long): Album
 
+    @Query("SELECT * FROM albums WHERE name == :name")
+    suspend fun getAlbumByName(name: String): Album
+
     @Query("SELECT count(*) FROM photos WHERE photos.albumId == :albumId")
     suspend fun getPhotosInAlbumCount(albumId: Long): Int
 
@@ -26,4 +29,8 @@ interface IAlbumDao {
 
     @Query("DELETE FROM albums")
     suspend fun deleteAllAlbums()
+
+    @Query("DELETE FROM albums " +
+            "WHERE id NOT IN (SELECT DISTINCT albumId FROM photos);")
+    suspend fun deleteEmptyAlbums()
 }

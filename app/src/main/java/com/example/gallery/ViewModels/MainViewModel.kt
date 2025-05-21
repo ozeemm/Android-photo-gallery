@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.gallery.App
-import com.example.gallery.Model.Album
 import com.example.gallery.Model.Photo
 import com.example.gallery.Storage.PdfExporter
 import com.example.gallery.Storage.PicturesExporter
@@ -48,38 +47,10 @@ class MainViewModel: ViewModel() {
         PdfExporter.export(_photos.value!!)
     }
 
-    public suspend fun createPhoto(photo: Photo){
-        App.database.photoDao().insertPhoto(photo)
-    }
-
-    public suspend fun createPhotoInNewAlbum(photo: Photo, albumName: String){
-        val album = Album(albumName)
-        val albumId = App.database.albumDao().insertAlbum(album)
-        photo.albumId = albumId
-        createPhoto(photo)
-    }
-
-    public suspend fun updatePhoto(photo: Photo){
-        App.database.photoDao().updatePhoto(photo)
-        deleteAlbumIfEmptyAfterChangePhoto(photo)
-    }
-
-    public suspend fun updatePhotoNewAlbum(photo: Photo, albumName: String){
-        val album = Album(albumName)
-        val albumId = App.database.albumDao().insertAlbum(album)
-        photo.albumId = albumId
-        updatePhoto(photo)
-    }
-
-    private suspend fun deleteAlbumIfEmptyAfterChangePhoto(photo: Photo){
-        val photosInAlbum = App.database.albumDao().getPhotosInAlbumCount(photo.album!!.id)
-        if(photosInAlbum == 0)
-            App.database.albumDao().deleteAlbum(photo.album!!)
-    }
-
     public suspend fun deletePhoto(index: Int){
         val photo = _photos.value!![index]
+
         App.database.photoDao().deletePhoto(photo)
-        deleteAlbumIfEmptyAfterChangePhoto(photo)
+        App.database.albumDao().deleteEmptyAlbums()
     }
 }
