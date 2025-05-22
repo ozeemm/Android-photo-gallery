@@ -1,4 +1,4 @@
-package com.example.gallery.Model
+package com.example.gallery.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

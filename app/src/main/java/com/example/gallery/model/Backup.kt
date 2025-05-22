@@ -1,4 +1,4 @@
-package com.example.gallery.Model
+package com.example.gallery.model
 
 data class Backup(
     var id: Int,

@@ -1,8 +1,7 @@
 package com.example.gallery.Database
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.gallery.Model.Album
+import com.example.gallery.model.Album
 
 @Dao
 interface IAlbumDao {

@@ -1,101 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<layout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp">
+        xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <data>
+        <variable
+            name="backup"
+            type="com.example.gallery.model.Backup"
+        />
+    </data>
+
+    <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
-        <!-- Заголовок с датой бэкапа -->
-        <TextView
-                android:id="@+id/backupDateTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#FF000000"
-                tools:text="01.01.2000 15:15"/>
-
-        <!-- Информация об альбомах -->
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:padding="16dp">
 
+            <!-- Заголовок с датой бэкапа -->
             <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/backupDateTextView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Альбомов:"
-                    android:textColor="#FF757575"/>
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#FF000000"
+                    android:datetimeText="@{backup.date}"/>
 
-            <TextView
-                    android:id="@+id/albumsCountTextView"
-                    android:layout_width="wrap_content"
+            <!-- Информация об альбомах -->
+            <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:textColor="@color/black"
-                    tools:text="5"/>
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Альбомов:"
+                        android:textColor="#FF757575"/>
+
+                <TextView
+                        android:id="@+id/albumsCountTextView"
+                        android:text="@{String.valueOf(backup.albumsCount)}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:textColor="@color/black"
+                        tools:text="5"/>
+            </LinearLayout>
+
+            <!-- Информация о фотографиях -->
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Фотографий:"
+                        android:textColor="#FF757575"/>
+
+                <TextView
+                        android:id="@+id/photosCountTextView"
+                        android:text="@{String.valueOf(backup.photosCount)}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:textColor="@color/black"
+                        tools:text="124"/>
+            </LinearLayout>
+
+            <!-- Кнопки действий -->
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                <!-- Кнопка загрузки -->
+                <Button
+                        android:id="@+id/loadButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Загрузить"
+                        android:textColor="#3F51B5"
+                        app:backgroundTint="@android:color/transparent"/>
+
+                <!-- Кнопка удаления -->
+                <Button
+                        android:id="@+id/deleteButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Удалить"
+                        android:textColor="#FF4081"
+                        app:backgroundTint="@android:color/transparent"/>
+            </LinearLayout>
         </LinearLayout>
-
-        <!-- Информация о фотографиях -->
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:orientation="horizontal">
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Фотографий:"
-                    android:textColor="#FF757575"/>
-
-            <TextView
-                    android:id="@+id/photosCountTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:textColor="@color/black"
-                    tools:text="124"/>
-        </LinearLayout>
-
-        <!-- Кнопки действий -->
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-            <!-- Кнопка загрузки -->
-            <Button
-                    android:id="@+id/loadButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Загрузить"
-                    android:textColor="#3F51B5"
-                    app:backgroundTint="@android:color/transparent"/>
-
-            <!-- Кнопка удаления -->
-            <Button
-                    android:id="@+id/deleteButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Удалить"
-                    android:textColor="#FF4081"
-                    app:backgroundTint="@android:color/transparent"/>
-        </LinearLayout>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
+</layout>

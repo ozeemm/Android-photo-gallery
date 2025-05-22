@@ -14,7 +14,7 @@ import kotlinx.coroutines.*
 import com.example.gallery.R
 import com.example.gallery.Adapters.PhotoAdapter
 import com.example.gallery.ViewModels.MainViewModel
-import com.example.gallery.Model.Photo // Не удалось удалить, так как используется в Extras
+import com.example.gallery.model.Photo // Не удалось удалить, так как используется в Extras
 import com.example.gallery.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

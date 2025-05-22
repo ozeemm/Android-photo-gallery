@@ -3,7 +3,7 @@ package com.example.gallery.Storage
 import android.graphics.Bitmap
 import android.icu.text.SimpleDateFormat
 import android.os.Environment
-import com.example.gallery.Model.Photo
+import com.example.gallery.model.Photo
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*

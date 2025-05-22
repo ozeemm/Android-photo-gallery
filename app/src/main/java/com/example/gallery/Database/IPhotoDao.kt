@@ -2,7 +2,7 @@ package com.example.gallery.Database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.gallery.Model.Photo
+import com.example.gallery.model.Photo
 
 @Dao
 interface IPhotoDao {

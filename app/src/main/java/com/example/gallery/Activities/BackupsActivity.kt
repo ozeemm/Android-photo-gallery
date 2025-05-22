@@ -3,16 +3,14 @@ package com.example.gallery.Activities
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
 
 import com.example.gallery.Adapters.BackupAdapter
-import com.example.gallery.Model.Backup // Не удалось удалить, так как используется в адаптере
+import com.example.gallery.model.Backup // Не удалось удалить, так как используется в адаптере
 import com.example.gallery.ViewModels.BackupsViewModel
 import com.example.gallery.R
 import com.example.gallery.databinding.ActivityBackupsBinding

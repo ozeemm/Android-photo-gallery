@@ -1,4 +1,4 @@
-package com.example.gallery.Model
+package com.example.gallery.model
 
 import android.graphics.Bitmap
 import androidx.room.*

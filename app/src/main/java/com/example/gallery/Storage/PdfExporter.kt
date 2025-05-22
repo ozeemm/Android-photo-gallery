@@ -2,7 +2,7 @@ package com.example.gallery.Storage
 
 import android.graphics.Bitmap
 import android.os.Environment
-import com.example.gallery.Model.Photo
+import com.example.gallery.model.Photo
 import com.itextpdf.io.font.constants.StandardFonts
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.font.PdfFontFactory

@@ -1,45 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<layout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-    <ImageView
-            android:id="@+id/photoImage"
-            android:layout_width="350dp"
-            android:layout_height="196dp"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            app:srcCompat="@drawable/empty_image"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp"
-            android:contentDescription="Photo"/>
-    <TextView
-            android:id="@+id/photoAlbumName"
-            android:text="Достопримечательности"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+                name="photo"
+                type="com.example.gallery.model.Photo" />
+    </data>
+
+    <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/photoImage"
-            android:layout_alignStart="@+id/photoImage"
-            android:layout_marginStart="24dp"/>
-    <TextView
-            android:id="@+id/photoDate"
-            android:text="01.01.1900"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/photoAlbumName"
-            android:layout_alignStart="@+id/photoAlbumName"/>
-    <ImageButton
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            app:srcCompat="@drawable/edit_pencil_image"
-            android:id="@+id/editPhotoButton"
-            android:layout_below="@id/photoImage"
-            android:layout_alignEnd="@id/photoImage"
-            android:scaleType="fitCenter"
-            android:background="@drawable/rounded_corner"
-            android:padding="8dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="26dp"
-            android:contentDescription="Edit button"/>
-</RelativeLayout>
+            android:layout_height="wrap_content">
+        <ImageView
+                android:id="@+id/photoImage"
+                android:layout_width="350dp"
+                android:layout_height="196dp"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/empty_image"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="Photo"
+                android:bitmap="@{photo.bitmap}"/>
+        <TextView
+                android:id="@+id/photoAlbumName"
+                android:text="@{photo.album.name + '/' + photo.name}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/photoImage"
+                android:layout_alignStart="@+id/photoImage"
+                android:layout_marginStart="24dp"/>
+        <TextView
+                android:id="@+id/photoDate"
+                android:text="@{photo.date}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/photoAlbumName"
+                android:layout_alignStart="@+id/photoAlbumName"/>
+        <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:srcCompat="@drawable/edit_pencil_image"
+                android:id="@+id/editPhotoButton"
+                android:layout_below="@id/photoImage"
+                android:layout_alignEnd="@id/photoImage"
+                android:scaleType="fitCenter"
+                android:background="@drawable/rounded_corner"
+                android:padding="8dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="26dp"
+                android:contentDescription="Edit button"/>
+    </RelativeLayout>
+</layout>

@@ -3,13 +3,13 @@ package com.example.gallery.ViewModels
 import android.icu.text.SimpleDateFormat
 import androidx.lifecycle.ViewModel
 import com.example.gallery.App
-import com.example.gallery.Model.Album
+import com.example.gallery.model.Album
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
-import com.example.gallery.Model.Photo
+import com.example.gallery.model.Photo
 import com.example.gallery.Utils.BitmapConverter
 
 class AddImageViewModel : ViewModel() {

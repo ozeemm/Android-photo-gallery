@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.gallery.App
-import com.example.gallery.Model.Photo
+import com.example.gallery.model.Photo
 import com.example.gallery.Storage.PdfExporter
 import com.example.gallery.Storage.PicturesExporter
 import kotlinx.coroutines.CoroutineScope

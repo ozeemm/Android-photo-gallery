@@ -2,14 +2,9 @@ package com.example.gallery.Adapters
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.gallery.Model.Photo
-import com.example.gallery.R
+import com.example.gallery.model.Photo
 import com.example.gallery.databinding.PhotoItemBinding
 
 class PhotoAdapter(): RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
@@ -25,19 +20,13 @@ class PhotoAdapter(): RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
     inner class PhotoViewHolder(private val binding: PhotoItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(photo: Photo){
-            binding.photoImage.setImageBitmap(photo.bitmap)
-            binding.photoAlbumName.text = "${photo.album!!.name}/${photo.name}"
-            binding.photoDate.text = photo.date
-            binding.editPhotoButton.setOnClickListener{ editButtonFunc(photo) }
+            binding.photo = photo
+            binding.executePendingBindings()
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
-        val binding = PhotoItemBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
+        val binding = PhotoItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PhotoViewHolder(binding)
     }
 

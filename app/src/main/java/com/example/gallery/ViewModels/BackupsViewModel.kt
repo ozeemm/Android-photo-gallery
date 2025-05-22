@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gallery.App
-import com.example.gallery.Model.Album
-import com.example.gallery.Model.Backup
-import com.example.gallery.Model.Photo
+import com.example.gallery.model.Album
+import com.example.gallery.model.Backup
+import com.example.gallery.model.Photo
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject

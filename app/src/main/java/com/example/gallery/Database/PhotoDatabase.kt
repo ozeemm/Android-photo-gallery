@@ -2,7 +2,7 @@ package com.example.gallery.Database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.gallery.Model.*
+import com.example.gallery.model.*
 
 @Database(
     entities = [Photo::class, Album::class],
