@@ -1,4 +1,4 @@
-package com.example.gallery.Activities
+package com.example.gallery.activities
 
 import android.app.Activity
 import android.content.Intent
@@ -18,10 +18,10 @@ import kotlinx.coroutines.*
 import java.io.IOException
 import kotlin.collections.ArrayList
 
-import com.example.gallery.Adapters.AlbumSpinnerAdapter
+import com.example.gallery.adapters.AlbumSpinnerAdapter
 import com.example.gallery.R
-import com.example.gallery.Utils.BitmapConverter
-import com.example.gallery.ViewModels.AddImageViewModel
+import com.example.gallery.utils.BitmapConverter
+import com.example.gallery.viewmodels.AddImageViewModel
 import com.example.gallery.databinding.ActivityAddImageBinding
 
 class AddImageActivity : AppCompatActivity()  {

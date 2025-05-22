@@ -1,4 +1,4 @@
-package com.example.gallery.Activities
+package com.example.gallery.activities
 
 import android.os.Bundle
 import android.view.Menu
@@ -9,9 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.*
 
-import com.example.gallery.Adapters.BackupAdapter
+import com.example.gallery.adapters.BackupAdapter
 import com.example.gallery.model.Backup // Не удалось удалить, так как используется в адаптере
-import com.example.gallery.ViewModels.BackupsViewModel
+import com.example.gallery.viewmodels.BackupsViewModel
 import com.example.gallery.R
 import com.example.gallery.databinding.ActivityBackupsBinding
 

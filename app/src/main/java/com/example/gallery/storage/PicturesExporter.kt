@@ -1,4 +1,4 @@
-package com.example.gallery.Storage
+package com.example.gallery.storage
 
 import android.graphics.Bitmap
 import android.icu.text.SimpleDateFormat

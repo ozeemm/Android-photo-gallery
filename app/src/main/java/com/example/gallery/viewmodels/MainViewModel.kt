@@ -1,13 +1,13 @@
-package com.example.gallery.ViewModels
+package com.example.gallery.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.gallery.App
-import com.example.gallery.Storage.IStorageExporter
+import com.example.gallery.storage.IStorageExporter
 import com.example.gallery.model.Photo
-import com.example.gallery.Storage.PdfExporter
+import com.example.gallery.storage.PdfExporter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

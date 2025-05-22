@@ -1,4 +1,4 @@
-package com.example.gallery.Activities
+package com.example.gallery.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,8 +12,8 @@ import kotlin.math.abs
 import kotlinx.coroutines.*
 
 import com.example.gallery.R
-import com.example.gallery.Adapters.PhotoAdapter
-import com.example.gallery.ViewModels.MainViewModel
+import com.example.gallery.adapters.PhotoAdapter
+import com.example.gallery.viewmodels.MainViewModel
 import com.example.gallery.model.Photo // Не удалось удалить, так как используется в Extras
 import com.example.gallery.databinding.ActivityMainBinding
 

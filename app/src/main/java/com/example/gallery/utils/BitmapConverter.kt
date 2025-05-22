@@ -1,4 +1,4 @@
-package com.example.gallery.Utils
+package com.example.gallery.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

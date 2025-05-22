@@ -2,7 +2,7 @@ package com.example.gallery.model
 
 import android.graphics.Bitmap
 import androidx.room.*
-import com.example.gallery.Utils.BitmapConverter
+import com.example.gallery.utils.BitmapConverter
 import java.io.Serializable
 
 @Entity(

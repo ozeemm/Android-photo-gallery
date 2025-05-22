@@ -1,4 +1,4 @@
-package com.example.gallery.ViewModels
+package com.example.gallery.viewmodels
 
 import android.icu.text.SimpleDateFormat
 import androidx.lifecycle.ViewModel
@@ -10,7 +10,7 @@ import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 import com.example.gallery.model.Photo
-import com.example.gallery.Utils.BitmapConverter
+import com.example.gallery.utils.BitmapConverter
 
 class AddImageViewModel : ViewModel() {
     private val randomImagesUrl = "https://picsum.photos/800/600"

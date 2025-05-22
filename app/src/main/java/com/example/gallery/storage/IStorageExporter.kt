@@ -1,4 +1,4 @@
-package com.example.gallery.Storage
+package com.example.gallery.storage
 
 import com.example.gallery.model.Photo
 
