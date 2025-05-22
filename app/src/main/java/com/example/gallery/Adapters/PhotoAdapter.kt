@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gallery.Model.Photo
 import com.example.gallery.R
+import com.example.gallery.databinding.PhotoItemBinding
 
 class PhotoAdapter(): RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
     private lateinit var photos: ArrayList<Photo>
@@ -22,9 +23,22 @@ class PhotoAdapter(): RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
         this.editButtonFunc = editButtonFunc
     }
 
+    inner class PhotoViewHolder(private val binding: PhotoItemBinding): RecyclerView.ViewHolder(binding.root) {
+        fun bind(photo: Photo){
+            binding.photoImage.setImageBitmap(photo.bitmap)
+            binding.photoAlbumName.text = "${photo.album!!.name}/${photo.name}"
+            binding.photoDate.text = photo.date
+            binding.editPhotoButton.setOnClickListener{ editButtonFunc(photo) }
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
-        val view = layoutInflater.inflate(R.layout.photo_item, parent, false)
-        return PhotoViewHolder(view)
+        val binding = PhotoItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return PhotoViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
@@ -32,30 +46,12 @@ class PhotoAdapter(): RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
     }
 
     override fun onBindViewHolder(viewHolder: PhotoViewHolder, position: Int) {
-        val photo = photos[position]
-
-        val album = photo.album!!.name
-        val name = photo.name
-        val date = photo.date
-
-        viewHolder.photoImage.setImageBitmap(photo.bitmap)
-        viewHolder.photoAlbumName.text = "$album/$name"
-        viewHolder.photoDate.text = date
-        viewHolder.editButton.setOnClickListener {
-            editButtonFunc(photo)
-        }
+        viewHolder.bind(photos[position])
     }
 
     fun updateItems(photos: ArrayList<Photo>){
         this.photos.clear()
         this.photos.addAll(photos)
         notifyDataSetChanged()
-    }
-
-    class PhotoViewHolder(private var photoItem: View): RecyclerView.ViewHolder(photoItem) {
-        val photoImage: ImageView = photoItem.findViewById(R.id.photoImage)
-        val photoAlbumName: TextView = photoItem.findViewById(R.id.photoAlbumName)
-        val photoDate: TextView = photoItem.findViewById(R.id.photoDate)
-        val editButton: ImageButton = photoItem.findViewById(R.id.editPhotoButton)
     }
 }

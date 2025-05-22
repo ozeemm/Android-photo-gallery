@@ -15,27 +15,29 @@ import com.example.gallery.R
 import com.example.gallery.Adapters.PhotoAdapter
 import com.example.gallery.ViewModels.MainViewModel
 import com.example.gallery.Model.Photo // Не удалось удалить, так как используется в Extras
+import com.example.gallery.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var photoAdapter: PhotoAdapter
     private lateinit var gestureDetector: GestureDetector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         gestureDetector = GestureDetector(this, SwipeListener())
 
         // Fill recycle view
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         photoAdapter = PhotoAdapter(this, ArrayList(emptyList())) { photo: Photo ->
             val intent = Intent(this, AddImageActivity::class.java)
             intent.putExtra("type", "Update")
             intent.putExtra("photo.id", photo.id)
             startActivity(intent)
         }
-        recyclerView.adapter = photoAdapter
+        binding.recyclerView.adapter = photoAdapter
 
         viewModel.photos.observe(this) { list ->
             photoAdapter.updateItems(list)
@@ -61,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             }
         )
 
-        itemTouchHelper.attachToRecyclerView(recyclerView)
+        itemTouchHelper.attachToRecyclerView(binding.recyclerView)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

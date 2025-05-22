@@ -7,30 +7,61 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.CheckedTextView
 import android.widget.TextView
+import com.example.gallery.databinding.SpinnerDropdownItemBinding
+import com.example.gallery.databinding.SpinnerItemBinding
 
 class AlbumSpinnerAdapter(
     private var ctx: Context,
-    private var resource: Int,
     private var albums: ArrayList<String>
-) : ArrayAdapter<String>(ctx, resource, albums) {
+) : ArrayAdapter<String>(ctx, 0, albums) {
 
-    private var layoutInflater: LayoutInflater = LayoutInflater.from(ctx)
+    // ViewHolder для обычного отображения
+    private class NormalViewHolder(val textView: TextView)
+
+    // ViewHolder для выпадающего списка
+    private class DropdownViewHolder(val checkedTextView: CheckedTextView)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val album = albums[position]
+        val view: View
+        val holder: NormalViewHolder
 
-        val view = layoutInflater.inflate(resource, parent, false)
-        view.findViewById<TextView>(android.R.id.text1).text = album
+        if (convertView == null) {
+            val binding = SpinnerItemBinding.inflate(
+                LayoutInflater.from(context),
+                parent,
+                false
+            )
+            view = binding.root
+            holder = NormalViewHolder(binding.text1)
+            view.tag = holder
+        } else {
+            view = convertView
+            holder = convertView.tag as NormalViewHolder
+        }
 
+        holder.textView.text = getItem(position)
         return view
     }
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val album = albums[position]
+        val view: View
+        val holder: DropdownViewHolder
 
-        val view = layoutInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false)
-        view.findViewById<CheckedTextView>(android.R.id.text1).text = album
+        if (convertView == null) {
+            val binding = SpinnerDropdownItemBinding.inflate(
+                LayoutInflater.from(context),
+                parent,
+                false
+            )
+            view = binding.root
+            holder = DropdownViewHolder(binding.text1)
+            view.tag = holder
+        } else {
+            view = convertView
+            holder = convertView.tag as DropdownViewHolder
+        }
 
+        holder.checkedTextView.text = getItem(position)
         return view
     }
 

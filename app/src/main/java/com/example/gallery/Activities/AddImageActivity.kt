@@ -7,11 +7,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,40 +22,24 @@ import com.example.gallery.Adapters.AlbumSpinnerAdapter
 import com.example.gallery.R
 import com.example.gallery.Utils.BitmapConverter
 import com.example.gallery.ViewModels.AddImageViewModel
+import com.example.gallery.databinding.ActivityAddImageBinding
 
 class AddImageActivity : AppCompatActivity()  {
 
+    lateinit var binding: ActivityAddImageBinding
     private lateinit var viewModel: AddImageViewModel
 
-    private lateinit var imageToSaveView: ImageView
-    private lateinit var buttonSave: Button
-    private lateinit var inputName: EditText
-    private lateinit var inputAlbumName: EditText
-    private lateinit var inputDate: EditText
-    private lateinit var spinnerAlbumName: Spinner
-    private lateinit var newAlbumCheckbox: CheckBox
-    private lateinit var spinnerAdapter: AlbumSpinnerAdapter
-
     private lateinit var type: AddImageActivityType
-
     private lateinit var chooseImageLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_image)
+        binding = ActivityAddImageBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         viewModel = ViewModelProvider(this).get(AddImageViewModel::class.java)
 
-        imageToSaveView = findViewById(R.id.imageToSaveView)
-        buttonSave = findViewById(R.id.buttonSave)
-        inputName = findViewById(R.id.inputName)
-        inputAlbumName = findViewById(R.id.inputAlbumName)
-        inputDate = findViewById(R.id.inputDate)
-        spinnerAlbumName = findViewById(R.id.spinnerAlbumName)
-        newAlbumCheckbox = findViewById(R.id.newAlbumNameCheckBox)
-
-        spinnerAdapter = AlbumSpinnerAdapter(this, android.R.layout.simple_spinner_item, ArrayList(emptyList()))
-        spinnerAdapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice)
-        spinnerAlbumName.adapter = spinnerAdapter
+        val spinnerAdapter = AlbumSpinnerAdapter(this, ArrayList(emptyList()))
+        binding.spinnerAlbumName.adapter = spinnerAdapter
 
         type = AddImageActivityType.valueOf(intent.getStringExtra("type")!!)
 
@@ -76,26 +55,26 @@ class AddImageActivity : AppCompatActivity()  {
                 val photoDataList = viewModel.getPhotoById(photoId)
 
                 runOnUiThread {
-                    imageToSaveView.setImageBitmap(BitmapConverter.stringToBitmap(photoDataList[0]))
-                    inputName.setText(photoDataList[1])
-                    spinnerAlbumName.setSelection(spinnerAdapter.getPosition(photoDataList[2]))
-                    inputDate.setText(photoDataList[3])
+                    binding.imageToSaveView.setImageBitmap(BitmapConverter.stringToBitmap(photoDataList[0]))
+                    binding.inputName.setText(photoDataList[1])
+                    binding.spinnerAlbumName.setSelection(spinnerAdapter.getPosition(photoDataList[2]))
+                    binding.inputDate.setText(photoDataList[3])
                 }
             }
         }
 
-        newAlbumCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
+        binding.newAlbumNameCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked){
-                inputAlbumName.visibility = View.VISIBLE
-                spinnerAlbumName.visibility = View.INVISIBLE
+                binding.inputAlbumName.visibility = View.VISIBLE
+                binding.spinnerAlbumName.visibility = View.INVISIBLE
             }
             else{
-                inputAlbumName.visibility = View.INVISIBLE
-                spinnerAlbumName.visibility = View.VISIBLE
+                binding.inputAlbumName.visibility = View.INVISIBLE
+                binding.spinnerAlbumName.visibility = View.VISIBLE
             }
         }
 
-        imageToSaveView.setOnClickListener {
+        binding.imageToSaveView.setOnClickListener {
             if(type != AddImageActivityType.Create)
                 return@setOnClickListener
 
@@ -113,18 +92,22 @@ class AddImageActivity : AppCompatActivity()  {
             val imageUri = result.data!!.data
 
             // Show image
-            imageToSaveView.setImageURI(imageUri)
+            binding.imageToSaveView.setImageURI(imageUri)
 
-            inputName.setText(viewModel.defaultPhotoName)
-            inputDate.setText(viewModel.currentDateString)
+            binding.inputName.setText(viewModel.defaultPhotoName)
+            binding.inputDate.setText(viewModel.currentDateString)
         }
 
-        buttonSave.setOnClickListener {
-            val name = inputName.text.toString()
-            val date = inputDate.text.toString()
-            val imageString = BitmapConverter.bitmapToString(imageToSaveView.drawable.toBitmap())
-            val isNewAlbum = newAlbumCheckbox.isChecked
-            val album = if(isNewAlbum) inputAlbumName.text.toString() else spinnerAlbumName.selectedItem as String
+        binding.buttonSave.setOnClickListener {
+            val name = binding.inputName.text.toString()
+            val date = binding.inputDate.text.toString()
+            val bitmap = binding.imageToSaveView.drawable.toBitmap()
+            val imageString = BitmapConverter.bitmapToString(bitmap)
+            val isNewAlbum = binding.newAlbumNameCheckBox.isChecked
+            val album = if(isNewAlbum)
+                binding.inputAlbumName.text.toString()
+            else
+                binding.spinnerAlbumName.selectedItem as String
 
             CoroutineScope(Dispatchers.IO).launch {
                 try {
@@ -180,9 +163,9 @@ class AddImageActivity : AppCompatActivity()  {
                 try {
                     val bitmap = BitmapConverter.stringToBitmap(viewModel.getRandomImageString())
                     runOnUiThread {
-                        imageToSaveView.setImageBitmap(bitmap)
-                        inputName.setText(viewModel.defaultPhotoName)
-                        inputDate.setText(viewModel.currentDateString)
+                        binding.imageToSaveView.setImageBitmap(bitmap)
+                        binding.inputName.setText(viewModel.defaultPhotoName)
+                        binding.inputDate.setText(viewModel.currentDateString)
                     }
                 }
                 catch(e: IOException){

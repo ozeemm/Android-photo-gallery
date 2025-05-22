@@ -15,28 +15,29 @@ import com.example.gallery.Adapters.BackupAdapter
 import com.example.gallery.Model.Backup // Не удалось удалить, так как используется в адаптере
 import com.example.gallery.ViewModels.BackupsViewModel
 import com.example.gallery.R
+import com.example.gallery.databinding.ActivityBackupsBinding
 
 class BackupsActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityBackupsBinding
     private lateinit var viewModel: BackupsViewModel
     private lateinit var backupAdapter: BackupAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_backups)
+        binding = ActivityBackupsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         viewModel = ViewModelProvider(this).get(BackupsViewModel::class.java)
 
         // Recycler View
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewBackups)
         backupAdapter = BackupAdapter(this, ArrayList(emptyList<Backup>()), BackupButtonsListener())
-        recyclerView.adapter = backupAdapter
+        binding.recyclerViewBackups.adapter = backupAdapter
 
         viewModel.backups.observe(this) { backups ->
             backupAdapter.updateItems(backups)
         }
 
         // Create backup button
-        val createBackupButton = findViewById<Button>(R.id.createBackupButton)
-        createBackupButton.setOnClickListener{
+        binding.createBackupButton.setOnClickListener{
             CoroutineScope(Dispatchers.IO).launch {
                 viewModel.createBackup()
 
