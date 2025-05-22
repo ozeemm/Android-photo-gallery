@@ -5,15 +5,11 @@
             android:orderInCategory="1"
             android:title="Добавить"/>
     <item
-            android:id="@+id/menuItemExportPictures"
+            android:id="@+id/menuItemExport"
             android:orderInCategory="2"
-            android:title="Экспорт фотографий в хранилище"/>
-    <item
-            android:id="@+id/menuItemExportPdf"
-            android:orderInCategory="3"
-            android:title="Экспорт в PDF"/>
+            android:title="Экспортировать"/>
     <item
         android:id="@+id/menuItemBackup"
-        android:orderInCategory="4"
+        android:orderInCategory="3"
         android:title="Резервное копирование на сервер"/>
 </menu>

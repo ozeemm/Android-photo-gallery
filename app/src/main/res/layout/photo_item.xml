@@ -38,8 +38,8 @@
                 android:layout_below="@+id/photoAlbumName"
                 android:layout_alignStart="@+id/photoAlbumName"/>
         <ImageButton
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 app:srcCompat="@drawable/edit_pencil_image"
                 android:id="@+id/editPhotoButton"
                 android:layout_below="@id/photoImage"

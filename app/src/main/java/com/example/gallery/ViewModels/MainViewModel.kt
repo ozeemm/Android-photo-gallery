@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.gallery.App
+import com.example.gallery.Storage.IStorageExporter
 import com.example.gallery.model.Photo
 import com.example.gallery.Storage.PdfExporter
-import com.example.gallery.Storage.PicturesExporter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,6 +31,8 @@ class MainViewModel: ViewModel() {
         }
     }
 
+    private val storageExporter: IStorageExporter = PdfExporter()
+
     init{
         App.database.photoDao().getPhotos().observeForever(photosObserver)
     }
@@ -39,12 +41,9 @@ class MainViewModel: ViewModel() {
         App.database.photoDao().getPhotos().removeObserver(photosObserver)
     }
 
-    suspend fun exportPhotosStorage(){
-        PicturesExporter.exportAll(_photos.value!!)
-    }
-
-    suspend fun exportPhotosPdf(){
-        PdfExporter.export(_photos.value!!)
+    suspend fun exportPhotos(): String{
+        storageExporter.export(_photos.value!!)
+        return storageExporter.onExportedMessage
     }
 
     suspend fun deletePhoto(index: Int){

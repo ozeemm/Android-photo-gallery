@@ -17,13 +17,16 @@ import com.itextpdf.layout.properties.HorizontalAlignment
 import java.io.ByteArrayOutputStream
 import java.io.File
 
-object PdfExporter {
+class PdfExporter : IStorageExporter {
     private val fileDirPath = Environment.getExternalStoragePublicDirectory(
         Environment.DIRECTORY_DOCUMENTS + "/Android-photo-gallery").toString()
 
-    private const val fileName = "Android-photo-gallery.pdf"
+    private val fileName = "Android-photo-gallery.pdf"
 
-    suspend fun export(photos: ArrayList<Photo>){
+    override val onExportedMessage: String
+        get() = "Экспортировано в PDF (Documents)"
+
+    override suspend fun export(photos: ArrayList<Photo>){
         val pdfDir = File(fileDirPath)
         val pdfFile = File(fileDirPath, fileName)
 

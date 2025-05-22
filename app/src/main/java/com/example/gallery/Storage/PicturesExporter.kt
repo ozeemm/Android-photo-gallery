@@ -9,11 +9,14 @@ import java.io.FileOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
-object PicturesExporter {
+class PicturesExporter : IStorageExporter {
     private val downloadsDirPath = Environment.getExternalStoragePublicDirectory(
         Environment.DIRECTORY_DOWNLOADS + "/Android-photo-gallery-export").toString()
 
-    suspend fun exportAll(photos: ArrayList<Photo>){
+    override val onExportedMessage: String
+        get() = "Экспортировано в хранилище (Downloads)"
+
+    override suspend fun export(photos: ArrayList<Photo>){
         val appDirPath = File(downloadsDirPath)
         if(!appDirPath.exists())
             appDirPath.mkdir()

@@ -22,6 +22,7 @@ class PhotoAdapter(): RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
         fun bind(photo: Photo){
             binding.photo = photo
             binding.executePendingBindings()
+            binding.editPhotoButton.setOnClickListener { editButtonFunc(photo) }
         }
     }
 

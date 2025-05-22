@@ -81,21 +81,12 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("type", "Create")
                 startActivity(intent)
             }
-            R.id.menuItemExportPictures -> {
+            R.id.menuItemExport -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    viewModel.exportPhotosStorage()
+                    val message = viewModel.exportPhotos()
 
-                    runOnUiThread {
-                        Toast.makeText(this@MainActivity, R.string.MainActivity_ExportedInStorage, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            R.id.menuItemExportPdf -> {
-                CoroutineScope(Dispatchers.IO).launch {
-                    viewModel.exportPhotosPdf()
-
-                    runOnUiThread {
-                        Toast.makeText(this@MainActivity, R.string.MainActivity_ExportedInPdf, Toast.LENGTH_SHORT).show()
+                    runOnUiThread{
+                        Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
                     }
                 }
             }
