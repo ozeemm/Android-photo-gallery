@@ -5,21 +5,21 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 import kotlinx.coroutines.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 import com.example.gallery.R
 import com.example.gallery.adapters.PhotoAdapter
 import com.example.gallery.viewmodels.MainViewModel
-import com.example.gallery.model.Photo // Не удалось удалить, так как используется в Extras
 import com.example.gallery.databinding.ActivityMainBinding
+import com.example.gallery.model.Photo // Не удалось удалить, так как используется в Extras
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModel()
     private lateinit var photoAdapter: PhotoAdapter
     private lateinit var gestureDetector: GestureDetector
 
@@ -27,7 +27,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         gestureDetector = GestureDetector(this, SwipeListener())
 
         // Fill recycle view

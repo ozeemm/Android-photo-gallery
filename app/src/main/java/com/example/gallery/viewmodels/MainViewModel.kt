@@ -12,7 +12,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
+class MainViewModel(
+    private val storageExporter: IStorageExporter
+): ViewModel() {
+
     private val _photos = MutableLiveData<ArrayList<Photo>>().apply {
         value = ArrayList()
     }
@@ -30,8 +33,6 @@ class MainViewModel: ViewModel() {
             }
         }
     }
-
-    private val storageExporter: IStorageExporter = PdfExporter()
 
     init{
         App.database.photoDao().getPhotos().observeForever(photosObserver)
