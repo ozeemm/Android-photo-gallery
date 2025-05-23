@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     kotlin("kapt")
-    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -57,8 +56,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // Hilt (основные зависимости)
-    implementation("com.google.dagger:hilt-android:2.48")
-    kapt("com.google.dagger:hilt-android-compiler:2.48")
-    kapt("androidx.hilt:hilt-compiler:1.2.0") // Обновленная версия
+    // Koin
+    implementation("io.insert-koin:koin-core:3.5.3")
+    implementation("io.insert-koin:koin-android:3.5.3")
 }

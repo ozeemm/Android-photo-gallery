@@ -3,6 +3,7 @@ agp = "8.6.0-alpha07"
 compilerVersion = "x.x.x"
 gson = "2.10.1"
 itext7CoreAndroid = "7.2.3"
+koinAndroid = "3.5.3"
 kotlin = "2.0.21"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -29,6 +30,10 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
+koin-androidx-viewmodel = { module = "io.insert-koin:koin-androidx-viewmodel", version.ref = "koinAndroid" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-bom = { module = "io.insert-koin:koin-bom" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
