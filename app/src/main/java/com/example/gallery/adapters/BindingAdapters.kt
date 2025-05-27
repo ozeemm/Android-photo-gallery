@@ -1,4 +1,4 @@
-package com.example.gallery.model
+package com.example.gallery.adapters
 
 import android.graphics.Bitmap
 import android.widget.ImageView

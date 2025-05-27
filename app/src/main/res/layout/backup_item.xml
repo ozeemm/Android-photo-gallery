@@ -9,6 +9,10 @@
             name="backup"
             type="com.example.gallery.model.Backup"
         />
+        <variable
+            name="backupButtonsListener"
+            type="com.example.gallery.adapters.BackupAdapter.BackupButtonsListener"
+        />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -96,7 +100,8 @@
                         android:layout_weight="1"
                         android:text="Загрузить"
                         android:textColor="#3F51B5"
-                        app:backgroundTint="@android:color/transparent"/>
+                        app:backgroundTint="@android:color/transparent"
+                        android:onClick="@{() -> backupButtonsListener.onLoadClicked(backup)}"/>
 
                 <!-- Кнопка удаления -->
                 <Button
@@ -106,7 +111,8 @@
                         android:layout_weight="1"
                         android:text="Удалить"
                         android:textColor="#FF4081"
-                        app:backgroundTint="@android:color/transparent"/>
+                        app:backgroundTint="@android:color/transparent"
+                        android:onClick="@{() -> backupButtonsListener.onDeleteClicked(backup)}"/>
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

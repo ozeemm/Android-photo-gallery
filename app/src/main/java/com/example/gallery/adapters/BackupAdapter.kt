@@ -26,6 +26,7 @@ class BackupAdapter() : RecyclerView.Adapter<BackupAdapter.BackupViewHolder>() {
     inner class BackupViewHolder(private val binding: BackupItemBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(backup: Backup){
             binding.backup = backup
+            binding.backupButtonsListener = backupButtonsListener
             binding.executePendingBindings()
         }
     }
